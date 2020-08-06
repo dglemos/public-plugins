@@ -165,6 +165,7 @@ sub species_list {
   if (!$self->{'_species_list'}) {
     my $hub     = $self->hub;
     my $sd      = $hub->species_defs;
+
     my @species;
 
     for ($self->valid_species) {
