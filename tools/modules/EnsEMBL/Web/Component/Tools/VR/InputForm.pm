@@ -99,6 +99,16 @@ sub get_cacheable_form_node {
   });
 
   $input_fieldset->add_field({
+      'type'          => 'radiolist',
+      'name'          => 'variant_option',
+      'label'         => $fd->{input_type}->{label},
+      # 'helptip'       => $fd->{id}->{helptip},
+      'value'         => 'region',
+      'class'         => '_stt',
+      'values'        => $fd->{input_type}->{values}
+  });
+
+  $input_fieldset->add_field({
     'label'         => 'Input data',
     'elements'      => [
       {

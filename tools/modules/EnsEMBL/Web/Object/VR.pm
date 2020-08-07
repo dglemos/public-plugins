@@ -167,43 +167,18 @@ sub get_form_details {
       input_type => {
         'label' => 'Input data type',
         'values' => [
-          { 'value' => 'id', 'caption' => 'Variant identifier' },
+          { 'value' => 'id', 'caption' => 'Variant identifier (Examples: )' },
           { 'value' => 'spdi', 'caption' => 'Genomic SPDI' },
           { 'value' => 'hgvsg', 'caption' => 'HGVS Genomic' },
           { 'value' => 'hgvsp', 'caption' => 'HGVS Coding' },
           { 'value' => 'hgvsc', 'caption' => 'HGVS Protein' },
-        ],
-      },
-
-      # id => {
-      #   'label'   => 'Variant ID',
-      #   'helptip' => 'Report the variant identifier(s)',
-      # },
-      # 
-      # spdi => {
-      #   'label'   => 'SPDI',
-      #   'helptip' => 'Report the genomic SPDI notation',
-      # },
-      # 
-      # hgvsc => {
-      #   'label'   => 'HGVS coding',
-      #   'helptip' => 'Report HGVS transcript nomenclature',
-      # },
-      # 
-      # hgvsp => {
-      #   'label'   => 'HGVS protein',
-      #   'helptip' => 'Report HGVS protein nomenclature',
-      # },
-      # 
-      # hgvsg => {
-      #   'label'   => 'HGVS genomic',
-      #   'helptip' => 'Report HGVS genomic nomenclature',
-      # },
-      # 
-      # vcf_string => {
-      #   'label'   => 'VCF format',
-      #   'helptip' => 'Report the VCF format',
-      # },
+        ]},
+      variant_option => {
+        'label' => 'Variant option',
+        'values' => [
+          { 'value' => 'single', 'caption' => 'Query a single variant' },
+          { 'value' => 'multi', 'caption' => 'Query multiple variants' },
+        ]},
     };
   }
 
