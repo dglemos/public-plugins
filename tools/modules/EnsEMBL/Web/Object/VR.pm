@@ -164,36 +164,46 @@ sub get_form_details {
   if(!exists($self->{_form_details})) {
 
     $self->{_form_details} = {
-
-      id => {
-        'label'   => 'Variant ID',
-        'helptip' => 'Report the variant identifier(s)',
+      input_type => {
+        'label' => 'Input data type',
+        'values' => [
+          { 'value' => 'id', 'caption' => 'Variant identifier' },
+          { 'value' => 'spdi', 'caption' => 'Genomic SPDI' },
+          { 'value' => 'hgvsg', 'caption' => 'HGVS Genomic' },
+          { 'value' => 'hgvsp', 'caption' => 'HGVS Coding' },
+          { 'value' => 'hgvsc', 'caption' => 'HGVS Protein' },
+        ],
       },
 
-      spdi => {
-        'label'   => 'SPDI',
-        'helptip' => 'Report the genomic SPDI notation',
-      },
-
-      hgvsc => {
-        'label'   => 'HGVS coding',
-        'helptip' => 'Report HGVS transcript nomenclature',
-      },
-
-      hgvsp => {
-        'label'   => 'HGVS protein',
-        'helptip' => 'Report HGVS protein nomenclature',
-      },
-
-      hgvsg => {
-        'label'   => 'HGVS genomic',
-        'helptip' => 'Report HGVS genomic nomenclature',
-      },
-
-      vcf_string => {
-        'label'   => 'VCF format',
-        'helptip' => 'Report the VCF format',
-      },
+      # id => {
+      #   'label'   => 'Variant ID',
+      #   'helptip' => 'Report the variant identifier(s)',
+      # },
+      # 
+      # spdi => {
+      #   'label'   => 'SPDI',
+      #   'helptip' => 'Report the genomic SPDI notation',
+      # },
+      # 
+      # hgvsc => {
+      #   'label'   => 'HGVS coding',
+      #   'helptip' => 'Report HGVS transcript nomenclature',
+      # },
+      # 
+      # hgvsp => {
+      #   'label'   => 'HGVS protein',
+      #   'helptip' => 'Report HGVS protein nomenclature',
+      # },
+      # 
+      # hgvsg => {
+      #   'label'   => 'HGVS genomic',
+      #   'helptip' => 'Report HGVS genomic nomenclature',
+      # },
+      # 
+      # vcf_string => {
+      #   'label'   => 'VCF format',
+      #   'helptip' => 'Report the VCF format',
+      # },
     };
   }
 

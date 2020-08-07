@@ -89,6 +89,16 @@ sub get_cacheable_form_node {
   });
 
   $input_fieldset->add_field({
+      'type'          => 'radiolist',
+      'name'          => 'input_type',
+      'label'         => $fd->{input_type}->{label},
+      # 'helptip'       => $fd->{id}->{helptip},
+      'value'         => 'region',
+      'class'         => '_stt',
+      'values'        => $fd->{input_type}->{values}
+  });
+
+  $input_fieldset->add_field({
     'label'         => 'Input data',
     'elements'      => [
       {
@@ -103,12 +113,6 @@ sub get_cacheable_form_node {
        'class'         => 'vep-input',
       },
       add_example_links(\@available_input_formats),
-      # {
-      #   'type'          => 'button',
-      #   'name'          => 'preview',
-      #   'class'         => 'hidden quick-vep-button',
-      #   'value'         => 'Run instant VEP for current line &rsaquo;',
-      # },
       {
         'type'          => 'div',
         'element_class' => 'vep_left_input',
@@ -123,22 +127,7 @@ sub get_cacheable_form_node {
       {
         'type'            => 'file',
         'name'            => 'file',
-      },
-      # {
-      #   'type'          => 'noedit',
-      #   'value'         => '<b>Or provide file URL:</b>',
-      #   'no_input'      => 1,
-      #   'is_html'       => 1,
-      #   'element_class' => 'vep_left_input vep_left_label',
-      #   'inline'        => 1
-      # },
-      # {
-      #   'type'          => 'url',
-      #   'name'          => 'url',
-      #   'size'          => 30,
-      #   'class'         => 'url',
-      # }
-      ]
+      }]
   });
 
 
