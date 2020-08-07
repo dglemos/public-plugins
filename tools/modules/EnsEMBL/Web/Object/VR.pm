@@ -179,6 +179,30 @@ sub get_form_details {
           { 'value' => 'single', 'caption' => 'Query a single variant' },
           { 'value' => 'multi', 'caption' => 'Query multiple variants' },
         ]},
+        id => {
+          'label'   => 'Variant identifier',
+          'helptip' => '',
+        },
+        spdi => {
+          'label'   => 'Genomic SPDI',
+          'helptip' => '',
+        },
+        hgvsg => {
+          'label'   => 'HGVS Genomic',
+          'helptip' => '',
+        },
+        hgvsc => {
+          'label'   => 'HGVS Coding',
+          'helptip' => '',
+        },
+        hgvsp => {
+          'label'   => 'HGVS Protein',
+          'helptip' => '',
+        },
+        vcf_string => {
+          'label'   => 'VCF format',
+          'helptip' => '',
+        },
     };
   }
 

@@ -90,22 +90,22 @@ sub get_cacheable_form_node {
 
   $input_fieldset->add_field({
       'type'          => 'radiolist',
-      'name'          => 'input_type',
-      'label'         => $fd->{input_type}->{label},
-      # 'helptip'       => $fd->{id}->{helptip},
-      'value'         => 'region',
-      'class'         => '_stt',
-      'values'        => $fd->{input_type}->{values}
-  });
-
-  $input_fieldset->add_field({
-      'type'          => 'radiolist',
       'name'          => 'variant_option',
       'label'         => $fd->{variant_option}->{label},
       # 'helptip'       => $fd->{id}->{helptip},
       'value'         => 'region',
       'class'         => '_stt',
       'values'        => $fd->{variant_option}->{values}
+  });
+
+  $input_fieldset->add_field({
+      'type'          => 'radiolist',
+      'name'          => 'input_type',
+      'label'         => $fd->{input_type}->{label},
+      # 'helptip'       => $fd->{id}->{helptip},
+      'value'         => 'region',
+      'class'         => '_stt',
+      'values'        => $fd->{input_type}->{values}
   });
 
   $input_fieldset->add_field({
@@ -140,28 +140,56 @@ sub get_cacheable_form_node {
       }]
   });
 
-
-  # This field is shown only for the species having refseq data
-  # if (first { $_->{'refseq'} } @$species) {
-  #   $input_fieldset->add_field({
-  #     'field_class'   => '_stt_rfq',
-  #     'type'          => 'radiolist',
-  #     'name'          => 'core_type',
-  #     'label'         => $fd->{'core_type'}->{label},
-  #     'helptip'       => $fd->{'core_type'}->{helptip},
-  #     'value'         => 'core',
-  #     'class'         => '_stt',
-  #     'values'        => $fd->{'core_type'}->{values}
-  #   });
-  # }
+  $input_fieldset->add_field({
+    'type'          => 'checklist',
+    'label'         => 'Results',
+    'field_class'   => [qw(_stt_yes _stt_allele)],
+    'values'        => [{
+      'name'          => "id",
+      'caption'       => $fd->{id}->{label},
+      # 'helptip'       => $fd->{af}->{helptip},
+      'value'         => 'yes',
+      'checked'       => 1
+    }, {
+      'name'          => "spdi",
+      'caption'       => $fd->{spdi}->{label},
+      # 'helptip'       => $fd->{af_1kg}->{helptip},
+      'value'         => 'yes',
+      'checked'       => 1
+    }, {
+      'name'          => "hgvsg",
+      'caption'       => $fd->{hgvsg}->{label},
+      # 'helptip'       => $fd->{af_esp}->{helptip},
+      'value'         => 'yes',
+      'checked'       => 1
+    }, {
+      'name'          => "hgvsc",
+      'caption'       => $fd->{hgvsc}->{label},
+      # 'helptip'       => $fd->{af_gnomad}->{helptip},
+      'value'         => 'yes',
+      'checked'       => 1
+    }, {
+      'name'          => "hgvsp",
+      'caption'       => $fd->{hgvsp}->{label},
+      # 'helptip'       => $fd->{af_gnomad}->{helptip},
+      'value'         => 'yes',
+      'checked'       => 1
+    }, {
+      'name'          => "vcf_string",
+      'caption'       => $fd->{vcf_string}->{label},
+      # 'helptip'       => $fd->{af_gnomad}->{helptip},
+      'value'         => 'yes',
+      'checked'       => 1
+    }]
+  }),
 
   ## Output options header
-  $form->add_fieldset({'no_required_notes' => 1});
-  
-  my $extra_fieldset  = $form->add_fieldset();
-  $extra_fieldset->add_field({ 'label' => 'Additional configurations:' });
-  
-  my $extra_container  = $form->add_fieldset({'no_required_notes' => 1, class => "extra-options-fieldset"});
+  # $form->add_fieldset({'no_required_notes' => 1});
+  # 
+  # my $extra_fieldset  = $form->add_fieldset();
+  # $extra_fieldset->add_field({ 'label' => 'Additional configurations:' });
+  # 
+  # my $extra_container  = $form->add_fieldset({'no_required_notes' => 1, class => "extra-options-fieldset"});
 
   ### Advanced config options
   # my $sections = CONFIG_SECTIONS;
