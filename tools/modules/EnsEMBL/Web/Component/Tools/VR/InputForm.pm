@@ -163,16 +163,16 @@ sub get_cacheable_form_node {
   my $extra_container  = $form->add_fieldset({'no_required_notes' => 1, class => "extra-options-fieldset"});
 
   ### Advanced config options
-  my $sections = CONFIG_SECTIONS;
-  foreach my $section (@$sections) {
-
-    my $fieldset_data =  {
-      'title' => $section->{'title'},
-      'desc'  => $section->{'caption'},
-    };
-    $fieldset_data->{'class'} = '_stt_var' if ($section->{'check_has_var'});
-    $self->togglable_fieldsets($extra_container, $fieldset_data, $self->can('_build_'.$section->{'id'})->($self, $form));
-  }
+  # my $sections = CONFIG_SECTIONS;
+  # foreach my $section (@$sections) {
+  # 
+  #   my $fieldset_data =  {
+  #     'title' => $section->{'title'},
+  #     'desc'  => $section->{'caption'},
+  #   };
+  #   $fieldset_data->{'class'} = '_stt_var' if ($section->{'check_has_var'});
+  #   $self->togglable_fieldsets($extra_container, $fieldset_data, $self->can('_build_'.$section->{'id'})->($self, $form));
+  # }
   
   # Run button
   $self->add_buttons_fieldset($form);

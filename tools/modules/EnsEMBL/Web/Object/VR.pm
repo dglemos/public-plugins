@@ -200,6 +200,23 @@ sub get_form_details {
   return $self->{_form_details};
 }
 
+sub get_consequences_data {
+  ## Gets overlap consequences information needed to render preview
+  ## @return Hashref with keys as consequence types
+  my $self  = shift;
+  my $hub   = $self->hub;
+  my $cm    = $hub->colourmap;
+  my $sd    = $hub->species_defs;
+
+  my %cons = map {$_->{'SO_term'} => {
+    'description' => $_->{'description'},
+    'rank'        => $_->{'rank'},
+    'colour'      => $cm->hex_by_name($sd->colour('variation')->{lc $_->{'SO_term'}}->{'default'})
+  }} values %Bio::EnsEMBL::Variation::Utils::Constants::OVERLAP_CONSEQUENCES;
+
+  return \%cons;
+}
+
 sub species_list {
   ## Returns a list of species with VEP specific info
   ## @return Arrayref of hashes with each hash having species specific info
@@ -214,16 +231,16 @@ sub species_list {
     for ($self->valid_species) {
 
       # Ignore any species with VEP disabled
-      # next if ($sd->get_config($_, 'VEP_DISABLED'));
+      next if ($sd->get_config($_, 'VEP_DISABLED'));
 
       my $db_config = $sd->get_config($_, 'databases');
 
       # example data for each species
-      # my $sample_data   = $sd->get_config($_, 'SAMPLE_DATA');
-      # my $example_data  = {};
-      # for (grep m/^VEP/, keys %$sample_data) {
-      #   $example_data->{lc s/^VEP\_//r} = $sample_data->{$_};
-      # }
+      my $sample_data   = $sd->get_config($_, 'SAMPLE_DATA');
+      my $example_data  = {};
+      for (grep m/^VEP/, keys %$sample_data) {
+        $example_data->{lc s/^VEP\_//r} = $sample_data->{$_};
+      }
 
       push @species, {
         'value'       => $_,
