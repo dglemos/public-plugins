@@ -24,7 +24,7 @@ use warnings;
 
 use List::Util qw(first);
 
-use EnsEMBL::Web::VEPConstants qw(INPUT_FORMATS CONFIG_SECTIONS);
+use EnsEMBL::Web::VRConstants qw(INPUT_FORMATS);
 
 use parent qw(
   EnsEMBL::Web::Component::Tools::VR
@@ -45,12 +45,13 @@ sub get_cacheable_form_node {
   my $object          = $self->object;
   my $sd              = $hub->species_defs;
   my $species         = $object->species_list;
-  my $form            = $self->new_tool_form({'class' => 'vep-form'});
+  # my $form            = $self->new_tool_form({'class' => 'vep-form'}); # from VEP
+  my $form            = $self->new_tool_form; # from LD
   my $fd              = $object->get_form_details;
   my $input_formats   = INPUT_FORMATS;
   my $input_fieldset  = $form->add_fieldset({'no_required_notes' => 1});
   my $current_species = $self->current_species;
-  my $msg             = $self->species_specific_info($self->current_species, 'VEP', 'VEP', 1);
+  my $msg             = $self->species_specific_info($self->current_species, 'VR', 'VR', 1);
 
   my ($current_species_data)  = grep { $_->{value} eq $current_species } @$species;
   my @available_input_formats = grep { $current_species_data->{example}->{$_->{value}} } @$input_formats;
