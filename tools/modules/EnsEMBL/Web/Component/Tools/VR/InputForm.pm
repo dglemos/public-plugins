@@ -70,8 +70,8 @@ sub get_cacheable_form_node {
           '_stt', '_sttmulti',
           $_->{'variation'}             ? '_stt__var'   : '_stt__novar',
           $_->{'refseq'}                ? '_stt__rfq'   : (),
-          $_->{'variation'}{'POLYPHEN'} ? '_stt__pphn'  : (),
-          $_->{'variation'}{'SIFT'}     ? '_stt__sift'  : ()
+          # $_->{'variation'}{'POLYPHEN'} ? '_stt__pphn'  : (),
+          # $_->{'variation'}{'SIFT'}     ? '_stt__sift'  : ()
         ]
       }, @$species ]
     }, {
@@ -103,12 +103,12 @@ sub get_cacheable_form_node {
        'class'         => 'vep-input',
       },
       add_example_links(\@available_input_formats),
-      {
-        'type'          => 'button',
-        'name'          => 'preview',
-        'class'         => 'hidden quick-vep-button',
-        'value'         => 'Run instant VEP for current line &rsaquo;',
-      },
+      # {
+      #   'type'          => 'button',
+      #   'name'          => 'preview',
+      #   'class'         => 'hidden quick-vep-button',
+      #   'value'         => 'Run instant VEP for current line &rsaquo;',
+      # },
       {
         'type'          => 'div',
         'element_class' => 'vep_left_input',
@@ -116,7 +116,7 @@ sub get_cacheable_form_node {
         'children'      => [{
           'node_name'   => 'span',
           'class'       => '_ht ht',
-          'title'       => sprintf('File uploads are limited to %sMB in size. Files may be compressed using gzip or zip', $sd->ENSEMBL_TOOLS_CGI_POST_MAX->{'VEP'} / (1024 * 1024)),
+          'title'       => sprintf('File uploads are limited to %sMB in size.', $sd->ENSEMBL_TOOLS_CGI_POST_MAX->{'VEP'} / (1024 * 1024)),
           'inner_HTML'  => '<b>Or upload file:</b>'
         }]
       },
@@ -124,20 +124,21 @@ sub get_cacheable_form_node {
         'type'            => 'file',
         'name'            => 'file',
       },
-      {
-        'type'          => 'noedit',
-        'value'         => '<b>Or provide file URL:</b>',
-        'no_input'      => 1,
-        'is_html'       => 1,
-        'element_class' => 'vep_left_input vep_left_label',
-        'inline'        => 1
-      },
-      {
-        'type'          => 'url',
-        'name'          => 'url',
-        'size'          => 30,
-        'class'         => 'url',
-      }]
+      # {
+      #   'type'          => 'noedit',
+      #   'value'         => '<b>Or provide file URL:</b>',
+      #   'no_input'      => 1,
+      #   'is_html'       => 1,
+      #   'element_class' => 'vep_left_input vep_left_label',
+      #   'inline'        => 1
+      # },
+      # {
+      #   'type'          => 'url',
+      #   'name'          => 'url',
+      #   'size'          => 30,
+      #   'class'         => 'url',
+      # }
+      ]
   });
 
 
