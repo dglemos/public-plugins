@@ -17,7 +17,7 @@ limitations under the License.
 
 =cut
 
-package EnsEMBL::Web::ToolsPipeConfig::VEP;
+package EnsEMBL::Web::ToolsPipeConfig::VR;
 
 ### Provides configs for VEP for tools pipeline
 
@@ -26,7 +26,7 @@ use warnings;
 
 use parent qw(EnsEMBL::Web::ToolsPipeConfig);
 
-sub logic_name        { 'VEP'                                     }
+sub logic_name        { 'VR'                                      }
 sub runnable          { 'EnsEMBL::Web::RunnableDB::VEP'           }
 sub queue_name        { $SiteDefs::ENSEMBL_VEP_QUEUE              }
 sub is_lsf            { !$SiteDefs::ENSEMBL_VEP_RUN_LOCAL         }

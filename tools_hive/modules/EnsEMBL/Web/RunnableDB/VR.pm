@@ -17,9 +17,9 @@ limitations under the License.
 
 =cut
 
-package EnsEMBL::Web::RunnableDB::VEP;
+package EnsEMBL::Web::RunnableDB::VR;
 
-### Hive Process RunnableDB for VEP
+### Hive Process RunnableDB for VR
 
 use strict;
 use warnings;
@@ -48,26 +48,26 @@ sub run {
   my $log_file        = "$work_dir/lsf_log.txt";
 
   # path for VEP_plugins (gets pushed to INC by VEP::Runner)
-  if (my $plugins_path = $self->param('plugins_path')) {
-    $options->{'dir_plugins'} = $plugins_path =~ /^\// ? $plugins_path : sprintf('%s/%s', $self->param('code_root'), $plugins_path);
-  }
+  # if (my $plugins_path = $self->param('plugins_path')) {
+  #   $options->{'dir_plugins'} = $plugins_path =~ /^\// ? $plugins_path : sprintf('%s/%s', $self->param('code_root'), $plugins_path);
+  # }
 
   $options->{$_}  = 1 for qw(force quiet safe vcf stats_text); # we need these options set on always!
-  $options->{$_}  = sprintf '%s/%s', $work_dir, delete $config->{$_} for qw(input_file output_file stats_file);
+  $options->{$_}  = sprintf '%s/%s', $work_dir, delete $config->{$_} for qw(input_file output_file);
   $options->{$_}  = $config->{$_} eq 'yes' ? 1 : $config->{$_} for grep { defined $config->{$_} && $config->{$_} ne 'no' } keys %$config;
   
   # are we using cache?
-  if ($self->param('cache_dir')){
-    $options->{"cache"}    = 1;
-    $options->{"dir"}      = $self->param('cache_dir');
-    $options->{"database"} = 0;
-
-    if(my $fasta_dir = $self->param('fasta_dir')) {
-      $options->{"fasta_dir"} = $fasta_dir;
-    }
-  } else {
+  # if ($self->param('cache_dir')){
+  #   $options->{"cache"}    = 1;
+  #   $options->{"dir"}      = $self->param('cache_dir');
+  #   $options->{"database"} = 0;
+  # 
+  #   if(my $fasta_dir = $self->param('fasta_dir')) {
+  #     $options->{"fasta_dir"} = $fasta_dir;
+  #   }
+  # } else {
     $options->{"database"} = 1;
-  }
+  # }
   
   # send warnings to STDERR
   $options->{"warning_file"} = "STDERR";
@@ -91,14 +91,14 @@ sub run {
 
   # tabix index results
   my $out = $options->{output_file};
-  if(-e $out) {
-    my $tmp = $out.'.tmp';
-    system(sprintf('grep "#" %s > %s', $out, $tmp));
-    system(sprintf('grep -v "#" %s | sort -k1,1 -k2,2n >> %s', $out, $tmp));
-    system("bgzip -c $tmp > $out");
-    system("tabix -p vcf $out");
-    unlink($tmp);
-  }
+  # if(-e $out) {
+  #   my $tmp = $out.'.tmp';
+  #   system(sprintf('grep "#" %s > %s', $out, $tmp));
+  #   system(sprintf('grep -v "#" %s | sort -k1,1 -k2,2n >> %s', $out, $tmp));
+  #   system("bgzip -c $tmp > $out");
+  #   system("tabix -p vcf $out");
+  #   unlink($tmp);
+  # }
   
   return 1;
 }
@@ -106,13 +106,13 @@ sub run {
 sub write_output {
   my $self        = shift;
   my $job_id      = $self->param('job_id');
-  my $result_web  = $self->param('result_file').".web";
-  return 1 unless -e $result_web;
-
-  my @result_keys = qw(chr start end allele_string strand variation_name consequence_type);
-  my @rows        = file_get_contents($result_web, sub { chomp; my @cols = split /\t/, $_; return { map { $result_keys[$_] => $cols[$_] } 0..$#result_keys } });
-
-  $self->save_results($job_id, {}, \@rows);
+  # my $result_web  = $self->param('result_file').".web";
+  # return 1 unless -e $result_web;
+  # 
+  # my @result_keys = qw(chr start end allele_string strand variation_name consequence_type);
+  # my @rows        = file_get_contents($result_web, sub { chomp; my @cols = split /\t/, $_; return { map { $result_keys[$_] => $cols[$_] } 0..$#result_keys } });
+  # 
+  # $self->save_results($job_id, {}, \@rows);
 
   return 1;
 }
