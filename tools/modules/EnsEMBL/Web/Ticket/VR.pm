@@ -30,7 +30,7 @@ use EnsEMBL::Web::Job::VR;
 
 use parent qw(EnsEMBL::Web::Ticket);
 
-use constant VEP_FORMAT_DOC => '/info/docs/tools/vep/vep_formats.html';
+# use constant VEP_FORMAT_DOC => '/info/docs/tools/vep/vep_formats.html';
 
 sub init_from_user_input {
   ## Abstract method implementation
@@ -52,12 +52,12 @@ sub init_from_user_input {
   throw exception('InputError', 'No input data is present') unless $file_content;
 
   # detect file format
-  my $detected_format;
-  try {
-    first { m/^[^\#]/ && ($detected_format = detect_format($_)) } split /\R/, $file_content;
-  } catch {
-    throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VEP_FORMAT_DOC), {'message_is_html' => 1});
-  };
+  # my $detected_format;
+  # try {
+  #   first { m/^[^\#]/ && ($detected_format = detect_format($_)) } split /\R/, $file_content;
+  # } catch {
+  #   throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VEP_FORMAT_DOC), {'message_is_html' => 1});
+  # };
 
   my $job_data = { map { my @val = $hub->param($_); $_ => @val > 1 ? \@val : $val[0] } grep { $_ !~ /^text/ && $_ ne 'file' } $hub->param };
 
@@ -85,9 +85,9 @@ sub init_from_user_input {
 
   $job_data->{'species'}    = $species;
   $job_data->{'input_file'} = $file_name;
-  $job_data->{'format'}     = $detected_format;
+  # $job_data->{'format'}     = $detected_format;
 
-  $self->add_job(EnsEMBL::Web::Job::VEP->new($self, {
+  $self->add_job(EnsEMBL::Web::Job::VR->new($self, {
     'job_desc'    => $description,
     'species'     => $species,
     'assembly'    => $hub->species_defs->get_config($species, 'ASSEMBLY_VERSION'),
