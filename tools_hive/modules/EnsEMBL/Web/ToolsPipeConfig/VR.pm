@@ -27,7 +27,7 @@ use warnings;
 use parent qw(EnsEMBL::Web::ToolsPipeConfig);
 
 sub logic_name        { 'VR'                                      }
-sub runnable          { 'EnsEMBL::Web::RunnableDB::VEP'           }
+sub runnable          { 'EnsEMBL::Web::RunnableDB::VR'           }
 sub queue_name        { $SiteDefs::ENSEMBL_VEP_QUEUE              }
 sub is_lsf            { !$SiteDefs::ENSEMBL_VEP_RUN_LOCAL         }
 sub lsf_timeout       { $SiteDefs::ENSEMBL_VEP_LSF_TIMEOUT        }

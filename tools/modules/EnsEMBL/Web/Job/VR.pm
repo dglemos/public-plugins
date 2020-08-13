@@ -39,9 +39,9 @@ sub prepare_to_dispatch {
   $vr_configs->{'species'} = lc $species;
 
   # select transcript set
-  $vr_configs->{'refseq'}  = 'yes' if $sp_details->{'refseq'} && ($job_data->{'core_type'} // '') eq 'refseq';
-  $vr_configs->{'merged'}  = 'yes' if $sp_details->{'refseq'} && ($job_data->{'core_type'} // '') eq 'merged';
-  $vr_configs->{'gencode_basic'} = 'yes' if ($job_data->{'core_type'} // '') eq 'gencode_basic';
+  # $vr_configs->{'refseq'}  = 'yes' if $sp_details->{'refseq'} && ($job_data->{'core_type'} // '') eq 'refseq';
+  # $vr_configs->{'merged'}  = 'yes' if $sp_details->{'refseq'} && ($job_data->{'core_type'} // '') eq 'merged';
+  # $vr_configs->{'gencode_basic'} = 'yes' if ($job_data->{'core_type'} // '') eq 'gencode_basic';
 
   # # filters
   # my $frequency_filtering = $job_data->{'frequency'};
