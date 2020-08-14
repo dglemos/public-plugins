@@ -110,7 +110,7 @@ sub prepare_to_dispatch {
   # extra and identifiers
   $job_data->{$_} and $vr_configs->{$_} = $job_data->{$_} for qw(id spdi hgvsc hgvsg hgvsp vcf_string);
 
-  # $vr_configs->{distance} = 0 if($job_data->{distance} eq '0' || $job_data->{distance} eq "");
+  $vr_configs->{distance} = 0 if($job_data->{distance} eq '0' || $job_data->{distance} eq "");
 
   # check for incompatibilities
   # if ($vep_configs->{'most_severe'} || $vep_configs->{'summary'}) {
