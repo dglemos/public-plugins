@@ -67,7 +67,7 @@ sub prepare_to_dispatch {
   # }
 
   # buffer size
-  $vr_configs->{buffer_size} = $job_data->{buffer_size};
+  $vr_configs->{buffer_size} = 1;
 
   # regulatory
   # if($sp_details->{'regulatory'} && $vep_configs->{'regulatory'}) {
@@ -104,13 +104,13 @@ sub prepare_to_dispatch {
 
   # i/o files
   $vr_configs->{'input_file'}  = $job_data->{'input_file'};
-  $vr_configs->{'output_file'} = 'output.vcf';
+  # $vr_configs->{'output_file'} = 'output.vcf';
   # $vep_configs->{'stats_file'}  = 'stats.txt';
 
   # extra and identifiers
   $job_data->{$_} and $vr_configs->{$_} = $job_data->{$_} for qw(id spdi hgvsc hgvsg hgvsp vcf_string);
 
-  $vr_configs->{distance} = 0 if($job_data->{distance} eq '0' || $job_data->{distance} eq "");
+  # $vr_configs->{distance} = 0 if($job_data->{distance} eq '0' || $job_data->{distance} eq "");
 
   # check for incompatibilities
   # if ($vep_configs->{'most_severe'} || $vep_configs->{'summary'}) {
@@ -196,19 +196,19 @@ sub prepare_to_dispatch {
 #   return $limit > $filesize ? 'VEPRest' : undef;
 # }
 
-sub _species_details {
-  ## @private
-  my ($self, $species) = @_;
-
-  my $sd        = $self->hub->species_defs;
-  my $db_config = $sd->get_config($species, 'databases');
-
-  return {
-    # 'sift'        => $db_config->{'DATABASE_VARIATION'}{'SIFT'},
-    # 'polyphen'    => $db_config->{'DATABASE_VARIATION'}{'POLYPHEN'},
-    # 'regulatory'  => $sd->get_config($species, 'REGULATORY_BUILD'),
-    'refseq'      => $db_config->{'DATABASE_OTHERFEATURES'} && $sd->get_config($species, 'VEP_REFSEQ')
-  };
-}
+# sub _species_details {
+#   ## @private
+#   my ($self, $species) = @_;
+# 
+#   my $sd        = $self->hub->species_defs;
+#   my $db_config = $sd->get_config($species, 'databases');
+# 
+#   return {
+#     # 'sift'        => $db_config->{'DATABASE_VARIATION'}{'SIFT'},
+#     # 'polyphen'    => $db_config->{'DATABASE_VARIATION'}{'POLYPHEN'},
+#     # 'regulatory'  => $sd->get_config($species, 'REGULATORY_BUILD'),
+#     'refseq'      => $db_config->{'DATABASE_OTHERFEATURES'} && $sd->get_config($species, 'VEP_REFSEQ')
+#   };
+# }
 
 1;
