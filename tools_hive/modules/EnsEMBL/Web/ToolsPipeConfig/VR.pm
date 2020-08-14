@@ -28,10 +28,10 @@ use parent qw(EnsEMBL::Web::ToolsPipeConfig);
 
 sub logic_name        { 'VR'                                      }
 sub runnable          { 'EnsEMBL::Web::RunnableDB::VR'           }
-sub queue_name        { $SiteDefs::ENSEMBL_VEP_QUEUE              }
-sub is_lsf            { !$SiteDefs::ENSEMBL_VEP_RUN_LOCAL         }
-sub lsf_timeout       { $SiteDefs::ENSEMBL_VEP_LSF_TIMEOUT        }
-sub memory_usage      { $SiteDefs::ENSEMBL_VEP_MEMORY_USAGE       }
-sub analysis_capacity { $SiteDefs::ENSEMBL_VEP_ANALYSIS_CAPACITY  }
+sub queue_name        { $SiteDefs::ENSEMBL_VR_QUEUE              }
+sub is_lsf            { !$SiteDefs::ENSEMBL_VR_RUN_LOCAL         }
+sub lsf_timeout       { $SiteDefs::ENSEMBL_VR_LSF_TIMEOUT        }
+sub memory_usage      { $SiteDefs::ENSEMBL_VR_MEMORY_USAGE       }
+sub analysis_capacity { $SiteDefs::ENSEMBL_VR_ANALYSIS_CAPACITY  }
 
 1;
