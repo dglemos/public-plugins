@@ -243,7 +243,7 @@ sub js_params {
   my $params  = $self->SUPER::js_params(@_);
 
   # consequences data to be used for VEP preview
-  $params->{'consequences_data'} = $object->get_consequences_data;
+  # $params->{'consequences_data'} = $object->get_consequences_data;
 
   # example data for each species
   $params->{'example_data'} = { map { $_->{'value'} => delete $_->{'example'} } @$species };
