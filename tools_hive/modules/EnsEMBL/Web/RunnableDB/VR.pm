@@ -30,7 +30,7 @@ use EnsEMBL::Web::Exceptions;
 use EnsEMBL::Web::SystemCommand;
 use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
 use EnsEMBL::Web::Utils::FileSystem qw(list_dir_contents);
-use Bio::EnsEMBL::VEP::Runner;
+use Bio::EnsEMBL::VEP::VariantRecoder;
 
 sub fetch_input {
   my $self = shift;
