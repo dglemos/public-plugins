@@ -132,11 +132,11 @@ sub update_conf {
   $SiteDefs::ENSEMBL_VR_QUEUE                  = 'highpri';
   $SiteDefs::ENSEMBL_VR_LSF_TIMEOUT            = undef;
   $SiteDefs::ENSEMBL_VR_ANALYSIS_CAPACITY      = 500;
-  $SiteDefs::ENSEMBL_VR_SCRIPT_DEFAULT_OPTIONS = {                                                 # Default options for command line vep script (keys with value undef get ignored)
-    'host'        => undef,                                                                         # Database host (defaults to ensembldb.ensembl.org)
-    'user'        => undef,                                                                         # Defaults to 'anonymous'
-    'password'    => undef,                                                                         # Not used by default
-    'port'        => undef                                                                          # Defaults to 5306
+  $SiteDefs::ENSEMBL_VR_SCRIPT_DEFAULT_OPTIONS = {
+    'host'        => 'mysql-ens-web-dev-01',
+    'user'        => 'ensro',
+    'password'    => undef,
+    'port'        => '4536'
   };
 
   # Assembly Converter configs
