@@ -84,7 +84,7 @@ sub run {
 
   # create a VEP runner and run the job
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);
-  $runner->run;
+  $runner->recode_all;
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
