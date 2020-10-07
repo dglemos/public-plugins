@@ -292,20 +292,20 @@ sub content {
   $html .= '<div>';
 
   # add toolboxes
-  my $nav_html = $self->_navigation($actual_to, $filter_string || $location);
+  # my $nav_html = $self->_navigation($actual_to, $filter_string || $location);
 
   # navigation HTML we frame here as we want to reuse it unframed after the results table
-  $html .= '<div class="toolbox right-margin">';
-  $html .= '<div class="toolbox-head">';
-  $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
-  $html .= helptip('Navigation', "Navigate through the results of your VEP job. By default the results for 5 variants are displayed; note that variants may have more than one result if they overlap multiple transcripts")." <small>(per variant)</small>";
-  $html .= '</div>';
-  $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
-  $html .= '</div>';
+  # $html .= '<div class="toolbox right-margin">';
+  # $html .= '<div class="toolbox-head">';
+  # $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
+  # $html .= helptip('Navigation', "Navigate through the results of your VEP job. By default the results for 5 variants are displayed; note that variants may have more than one result if they overlap multiple transcripts")." <small>(per variant)</small>";
+  # $html .= '</div>';
+  # $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
+  # $html .= '</div>';
 
   # these are framed within the subroutine
-  my ($filter_html, $active_filters) = @{$self->_filters($headers, \%header_titles)};
-  $html .= $filter_html;
+  # my ($filter_html, $active_filters) = @{$self->_filters($headers, \%header_titles)};
+  # $html .= $filter_html;
 
   # my $download_html = $self->_download(\%content_args, \%seen_ids, $species);
   # $html .= $download_html;
@@ -340,7 +340,7 @@ sub content {
   $html .= $table->render || '<h3>No data</h3>';
 
   # repeat navigation div under table
-  $html .= '<div>'.$nav_html.'</div>';
+  # $html .= '<div>'.$nav_html.'</div>';
 
   $html .= '</div>';
 
