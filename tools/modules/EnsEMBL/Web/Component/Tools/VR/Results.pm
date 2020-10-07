@@ -26,7 +26,7 @@ use URI::Escape qw(uri_unescape);
 use HTML::Entities qw(encode_entities);
 use POSIX qw(ceil);
 # use Bio::EnsEMBL::Variation::Utils::Constants qw(%OVERLAP_CONSEQUENCES);
-# use Bio::EnsEMBL::VEP::Constants qw(%FIELD_DESCRIPTIONS);
+use Bio::EnsEMBL::VEP::Constants qw(%FIELD_DESCRIPTIONS);
 use EnsEMBL::Web::Utils::FormatText qw(helptip);
 use EnsEMBL::Web::Component::Tools::NewJobButton;
 
@@ -230,36 +230,36 @@ sub content {
 
 
   # extras
-  # my %table_sorts = (
-  #   'Location'            => 'position_html',
-  #   'cDNA_position'       => 'numeric',
-  #   'CDS_position'        => 'numeric',
-  #   'Protein_position'    => 'numeric',
-  #   'MOTIF_POS'           => 'numeric',
-  #   'MOTIF_SCORE_CHANGE'  => 'numeric',
-  #   'SIFT'                => 'hidden_position',
-  #   'PolyPhen'            => 'hidden_position',
-  #   'AF'                  => 'numeric',
-  #   'AFR_AF'              => 'numeric',
-  #   'AMR_AF'              => 'numeric',
-  #   'ASN_AF'              => 'numeric',
-  #   'EUR_AF'              => 'numeric',
-  #   'EAS_AF'              => 'numeric',
-  #   'SAS_AF'              => 'numeric',
-  #   'AA_AF'               => 'numeric',
-  #   'EA_AF'               => 'numeric',
-  #   'ExAC_AFR_AF'         => 'numeric',
-  #   'ExAC_AMR_AF'         => 'numeric',
-  #   'ExAC_Adj_AF'         => 'numeric',
-  #   'ExAC_EAS_AF'         => 'numeric',
-  #   'ExAC_FIN_AF'         => 'numeric',
-  #   'ExAC_NFE_AF'         => 'numeric',
-  #   'ExAC_OTH_AF'         => 'numeric',
-  #   'ExAC_SAS_AF'         => 'numeric',
-  #   'DISTANCE'            => 'numeric',    
-  #   'EXON'                => 'hidden_position',
-  #   'INTRON'              => 'hidden_position'
-  # );
+  my %table_sorts = (
+    'Location'            => 'position_html',
+    'cDNA_position'       => 'numeric',
+    'CDS_position'        => 'numeric',
+    'Protein_position'    => 'numeric',
+    'MOTIF_POS'           => 'numeric',
+    'MOTIF_SCORE_CHANGE'  => 'numeric',
+    'SIFT'                => 'hidden_position',
+    'PolyPhen'            => 'hidden_position',
+    'AF'                  => 'numeric',
+    'AFR_AF'              => 'numeric',
+    'AMR_AF'              => 'numeric',
+    'ASN_AF'              => 'numeric',
+    'EUR_AF'              => 'numeric',
+    'EAS_AF'              => 'numeric',
+    'SAS_AF'              => 'numeric',
+    'AA_AF'               => 'numeric',
+    'EA_AF'               => 'numeric',
+    'ExAC_AFR_AF'         => 'numeric',
+    'ExAC_AMR_AF'         => 'numeric',
+    'ExAC_Adj_AF'         => 'numeric',
+    'ExAC_EAS_AF'         => 'numeric',
+    'ExAC_FIN_AF'         => 'numeric',
+    'ExAC_NFE_AF'         => 'numeric',
+    'ExAC_OTH_AF'         => 'numeric',
+    'ExAC_SAS_AF'         => 'numeric',
+    'DISTANCE'            => 'numeric',    
+    'EXON'                => 'hidden_position',
+    'INTRON'              => 'hidden_position'
+  );
 
   my @table_headers = map {{
     'key' => $_,
@@ -776,101 +776,101 @@ sub content {
 ###########
 
 # sub _download {
-  my $self = shift;
-  my $content_args = shift;
-  # my $seen_ids = shift;
-  my $species = shift;
-
-  my $object = $self->object;
-  my $hub    = $self->hub;
-  my $sd     = $hub->species_defs;
-
-  my $html = '';
-
-  $html .= '<div class="toolbox">';
-  $html .= '<div class="toolbox-head"><img src="/i/16/download.png" style="vertical-align:top;"> Download</div><div style="padding:5px;">';
-
-  # all
-  $html .= '<div><b>All:</b><span style="float:right; margin-left:10px;">';
-  $html .= sprintf(
-    ' <a class="_ht" title="Download all results in %s format%s" href="%s">%s</a>',
-    $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_ }), $_
-  ) for qw(VCF VEP TXT);
-  $html .= '</span></div>';
-
-  # filtered
-  if($content_args->{filter}) {
-
-    $html .= '<div style="margin-top: 5px"><b>Filtered:</b><span style="float:right; margin-left:10px;">';
-    $html .= sprintf(
-      ' <a class="_ht" title="Download filtered results in %s format%s" href="%s">%s</a>',
-      $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_, map {$_ => $content_args->{$_}} grep {!/to|from/} keys %$content_args }), $_
-    ) for qw(VCF VEP TXT);
-    $html .= '</span></div>';
-  }
-
-
-  ## BIOMART
-  ##########
-
-  # if($sd->ENSEMBL_MART_ENABLED) {
-  # 
-  #   # uniquify lists, retain order
-  #   foreach my $key(keys %$seen_ids) {
-  #     my %tmp_seen;
-  #     my @tmp_list;
-  # 
-  #     foreach my $item(@{$seen_ids->{$key}}) {
-  #       push @tmp_list, $item unless $tmp_seen{$item};
-  #       $tmp_seen{$item} = 1;
-  #     }
-  # 
-  #     $seen_ids->{$key} = \@tmp_list;
-  #   }
-  # 
-  #   # generate mart species name
-  #   my @split = split /\_/, $species;
-  #   my $m_species = lc(substr($split[0], 0, 1)).$split[1];
-  # 
-  #   my $var_mart_url =
-  #     '/biomart/martview?VIRTUALSCHEMANAME=default'.
-  #     '&ATTRIBUTES='.
-  #     $m_species.'_snp.default.snp.refsnp_id|'.
-  #     $m_species.'_snp.default.snp.refsnp_source|'.
-  #     $m_species.'_snp.default.snp.chr_name|'.
-  #     $m_species.'_snp.default.snp.chrom_start'.
-  #     '&FILTERS='.
-  #     $m_species.'_snp.default.filters.snp_filter.%22'.join(",", @{$seen_ids->{vars} || []}).'%22'.
-  #     '&VISIBLEPANEL=filterpanel';
-  # 
-  #   my $gene_mart_url =
-  #     '/biomart/martview?VIRTUALSCHEMANAME=default'.
-  #     '&ATTRIBUTES='.
-  #     $m_species.'_gene_ensembl.default.feature_page.ensembl_gene_id|'.
-  #     $m_species.'_gene_ensembl.default.feature_page.chromosome_name|'.
-  #     $m_species.'_gene_ensembl.default.feature_page.start_position|'.
-  #     $m_species.'_gene_ensembl.default.feature_page.end_position'.
-  #     '&FILTERS='.
-  #     $m_species.'_gene_ensembl.default.filters.ensembl_gene_id.%22'.join(",", @{$seen_ids->{genes} || []}).'%22'.
-  #     '&VISIBLEPANEL=filterpanel';
-  # 
-  #   $html .= '<div style="margin-top: 5px"><b>BioMart:</b><span style="float:right; margin-left:10px;">';
-  # 
-  #   $html .= $seen_ids->{vars} ? sprintf(
-  #     '<a class="_ht" title="Query BioMart with co-located variants in this view" rel="external" href="%s">Variants</a> ',
-  #     $var_mart_url) : 'Variants ';
-  # 
-  #   $html .= $seen_ids->{genes} ? sprintf(
-  #     '<a class="_ht" title="Query BioMart with genes in this view" rel="external" href="%s">Genes</a>',
-  #     $gene_mart_url) : 'Genes ';
-  # 
-  #   $html .= '</div>';
-  # }
-
-  $html .= '</div></div>';
-
-  return $html;
-}
+#   my $self = shift;
+#   my $content_args = shift;
+#   # my $seen_ids = shift;
+#   my $species = shift;
+# 
+#   my $object = $self->object;
+#   my $hub    = $self->hub;
+#   my $sd     = $hub->species_defs;
+# 
+#   my $html = '';
+# 
+#   $html .= '<div class="toolbox">';
+#   $html .= '<div class="toolbox-head"><img src="/i/16/download.png" style="vertical-align:top;"> Download</div><div style="padding:5px;">';
+# 
+#   # all
+#   $html .= '<div><b>All:</b><span style="float:right; margin-left:10px;">';
+#   $html .= sprintf(
+#     ' <a class="_ht" title="Download all results in %s format%s" href="%s">%s</a>',
+#     $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_ }), $_
+#   ) for qw(VCF VEP TXT);
+#   $html .= '</span></div>';
+# 
+#   # filtered
+#   if($content_args->{filter}) {
+# 
+#     $html .= '<div style="margin-top: 5px"><b>Filtered:</b><span style="float:right; margin-left:10px;">';
+#     $html .= sprintf(
+#       ' <a class="_ht" title="Download filtered results in %s format%s" href="%s">%s</a>',
+#       $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_, map {$_ => $content_args->{$_}} grep {!/to|from/} keys %$content_args }), $_
+#     ) for qw(VCF VEP TXT);
+#     $html .= '</span></div>';
+#   }
+# 
+# 
+#   ## BIOMART
+#   ##########
+# 
+#   # if($sd->ENSEMBL_MART_ENABLED) {
+#   # 
+#   #   # uniquify lists, retain order
+#   #   foreach my $key(keys %$seen_ids) {
+#   #     my %tmp_seen;
+#   #     my @tmp_list;
+#   # 
+#   #     foreach my $item(@{$seen_ids->{$key}}) {
+#   #       push @tmp_list, $item unless $tmp_seen{$item};
+#   #       $tmp_seen{$item} = 1;
+#   #     }
+#   # 
+#   #     $seen_ids->{$key} = \@tmp_list;
+#   #   }
+#   # 
+#   #   # generate mart species name
+#   #   my @split = split /\_/, $species;
+#   #   my $m_species = lc(substr($split[0], 0, 1)).$split[1];
+#   # 
+#   #   my $var_mart_url =
+#   #     '/biomart/martview?VIRTUALSCHEMANAME=default'.
+#   #     '&ATTRIBUTES='.
+#   #     $m_species.'_snp.default.snp.refsnp_id|'.
+#   #     $m_species.'_snp.default.snp.refsnp_source|'.
+#   #     $m_species.'_snp.default.snp.chr_name|'.
+#   #     $m_species.'_snp.default.snp.chrom_start'.
+#   #     '&FILTERS='.
+#   #     $m_species.'_snp.default.filters.snp_filter.%22'.join(",", @{$seen_ids->{vars} || []}).'%22'.
+#   #     '&VISIBLEPANEL=filterpanel';
+#   # 
+#   #   my $gene_mart_url =
+#   #     '/biomart/martview?VIRTUALSCHEMANAME=default'.
+#   #     '&ATTRIBUTES='.
+#   #     $m_species.'_gene_ensembl.default.feature_page.ensembl_gene_id|'.
+#   #     $m_species.'_gene_ensembl.default.feature_page.chromosome_name|'.
+#   #     $m_species.'_gene_ensembl.default.feature_page.start_position|'.
+#   #     $m_species.'_gene_ensembl.default.feature_page.end_position'.
+#   #     '&FILTERS='.
+#   #     $m_species.'_gene_ensembl.default.filters.ensembl_gene_id.%22'.join(",", @{$seen_ids->{genes} || []}).'%22'.
+#   #     '&VISIBLEPANEL=filterpanel';
+#   # 
+#   #   $html .= '<div style="margin-top: 5px"><b>BioMart:</b><span style="float:right; margin-left:10px;">';
+#   # 
+#   #   $html .= $seen_ids->{vars} ? sprintf(
+#   #     '<a class="_ht" title="Query BioMart with co-located variants in this view" rel="external" href="%s">Variants</a> ',
+#   #     $var_mart_url) : 'Variants ';
+#   # 
+#   #   $html .= $seen_ids->{genes} ? sprintf(
+#   #     '<a class="_ht" title="Query BioMart with genes in this view" rel="external" href="%s">Genes</a>',
+#   #     $gene_mart_url) : 'Genes ';
+#   # 
+#   #   $html .= '</div>';
+#   # }
+# 
+#   $html .= '</div></div>';
+# 
+#   return $html;
+# }
 
 # sub linkify {
 #   my $self = shift;
@@ -1151,14 +1151,14 @@ sub content {
 
 
 # sub reload_link {
-  my ($self, $html, $url_params) = @_;
-
-  return sprintf('<a href="%s" class="_reload"><input type="hidden" value="%s" />%s</a>',
-    $self->hub->url({%$url_params, 'update_panel' => undef}, undef, 1),
-    $self->ajax_url(undef, {%$url_params, 'update_panel' => 1}, undef, 1),
-    $html
-  );
-}
+#   my ($self, $html, $url_params) = @_;
+# 
+#   return sprintf('<a href="%s" class="_reload"><input type="hidden" value="%s" />%s</a>',
+#     $self->hub->url({%$url_params, 'update_panel' => undef}, undef, 1),
+#     $self->ajax_url(undef, {%$url_params, 'update_panel' => 1}, undef, 1),
+#     $html
+#   );
+# }
 
 sub zmenu_link {
   my ($self, $url, $zmenu_url, $html) = @_;
