@@ -261,12 +261,12 @@ sub content {
   #   'INTRON'              => 'hidden_position'
   # );
 
-  # my @table_headers = map {{
-  #   'key' => $_,
-  #   'title' => ($header_titles{$_} || $_),
-  #   'sort' => $table_sorts{$_} || 'string',
-  #   'help' => $FIELD_DESCRIPTIONS{$_} || $header_extra_descriptions->{$_},
-  # }} @$headers;
+  my @table_headers = map {{
+    'key' => $_,
+    'title' => ($header_titles{$_} || $_),
+    'sort' => $table_sorts{$_} || 'string',
+    'help' => $FIELD_DESCRIPTIONS{$_} || $header_extra_descriptions->{$_},
+  }} @$headers;
 
   $html .= '<div><h3>Results preview</h3>';
   $html .= '<input type="hidden" class="panel_type" value="VEPResults" />';
@@ -329,15 +329,15 @@ sub content {
   }
 
   # render table
-  # my $data_table_options = { 
-  #                            data_table => 1, 
-  #                            sorting => [ 'Location asc' ], 
-  #                            exportable => 0, 
-  #                            data_table_config => { bLengthChange => 'false', bFilter => 'false' }, 
-  #                            hidden_columns => \@hidden_columns || []
-  #                          };
-  # my $table = $self->new_table(\@table_headers, $rows, $data_table_options); 
-  # $html .= $table->render || '<h3>No data</h3>';
+  my $data_table_options = { 
+                             data_table => 1, 
+                             sorting => [ 'Location asc' ], 
+                             exportable => 0, 
+                             data_table_config => { bLengthChange => 'false', bFilter => 'false' }, 
+                             hidden_columns => \@hidden_columns || []
+                           };
+  my $table = $self->new_table(\@table_headers, $rows, $data_table_options); 
+  $html .= $table->render || '<h3>No data</h3>';
 
   # repeat navigation div under table
   $html .= '<div>'.$nav_html.'</div>';
