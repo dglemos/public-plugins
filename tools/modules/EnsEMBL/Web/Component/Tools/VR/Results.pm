@@ -25,8 +25,8 @@ use warnings;
 use URI::Escape qw(uri_unescape);
 use HTML::Entities qw(encode_entities);
 use POSIX qw(ceil);
-use Bio::EnsEMBL::Variation::Utils::Constants qw(%OVERLAP_CONSEQUENCES);
-use Bio::EnsEMBL::VEP::Constants qw(%FIELD_DESCRIPTIONS);
+# use Bio::EnsEMBL::Variation::Utils::Constants qw(%OVERLAP_CONSEQUENCES);
+# use Bio::EnsEMBL::VEP::Constants qw(%FIELD_DESCRIPTIONS);
 use EnsEMBL::Web::Utils::FormatText qw(helptip);
 use EnsEMBL::Web::Component::Tools::NewJobButton;
 
@@ -34,16 +34,16 @@ use parent qw(EnsEMBL::Web::Component::Tools::VR);
 
 our $MAX_FILTERS = 50;
 
-our %PROTEIN_DOMAIN_LABELS = (
-  'Pfam_domain'         => 'PFAM',
-  'Prints_domain'       => 'PRINTS',
-  'TIGRFAM_domain'      => 'TIGRFAM',
-  'SMART_domains'       => 'SMART',
-  'Superfamily_domains' => 'SUPERFAMILY',
-  'hmmpanther'          => 'PANTHERDB',
-  'PROSITE_profiles'    => 'PROSITE_PROFILES',
-  'PROSITE_patterns'    => 'PROSITE_PATTERNS',
-);
+# our %PROTEIN_DOMAIN_LABELS = (
+#   'Pfam_domain'         => 'PFAM',
+#   'Prints_domain'       => 'PRINTS',
+#   'TIGRFAM_domain'      => 'TIGRFAM',
+#   'SMART_domains'       => 'SMART',
+#   'Superfamily_domains' => 'SUPERFAMILY',
+#   'hmmpanther'          => 'PANTHERDB',
+#   'PROSITE_profiles'    => 'PROSITE_PROFILES',
+#   'PROSITE_patterns'    => 'PROSITE_PATTERNS',
+# );
 
 sub content {
   my $self    = shift;
@@ -329,15 +329,15 @@ sub content {
   }
 
   # render table
-  my $data_table_options = { 
-                             data_table => 1, 
-                             sorting => [ 'Location asc' ], 
-                             exportable => 0, 
-                             data_table_config => { bLengthChange => 'false', bFilter => 'false' }, 
-                             hidden_columns => \@hidden_columns || []
-                           };
-  my $table = $self->new_table(\@table_headers, $rows, $data_table_options); 
-  $html .= $table->render || '<h3>No data</h3>';
+  # my $data_table_options = { 
+  #                            data_table => 1, 
+  #                            sorting => [ 'Location asc' ], 
+  #                            exportable => 0, 
+  #                            data_table_config => { bLengthChange => 'false', bFilter => 'false' }, 
+  #                            hidden_columns => \@hidden_columns || []
+  #                          };
+  # my $table = $self->new_table(\@table_headers, $rows, $data_table_options); 
+  # $html .= $table->render || '<h3>No data</h3>';
 
   # repeat navigation div under table
   $html .= '<div>'.$nav_html.'</div>';
@@ -392,7 +392,7 @@ sub content {
 ## NAVIGATION
 #############
 
-sub _navigation {
+# sub _navigation {
   my $self = shift;
   my $actual_to = shift;
   my $filter_string_or_location = shift;
@@ -538,7 +538,7 @@ sub _navigation {
 ## FILTERS
 ##########
 
-sub _filters {
+# sub _filters {
   my $self = shift;
   my $headers = shift;
   my $header_titles = shift;
@@ -775,7 +775,7 @@ sub _filters {
 ## DOWNLOAD
 ###########
 
-sub _download {
+# sub _download {
   my $self = shift;
   my $content_args = shift;
   # my $seen_ids = shift;
@@ -1150,7 +1150,7 @@ sub _download {
 # }
 
 
-sub reload_link {
+# sub reload_link {
   my ($self, $html, $url_params) = @_;
 
   return sprintf('<a href="%s" class="_reload"><input type="hidden" value="%s" />%s</a>',
