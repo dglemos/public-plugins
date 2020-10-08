@@ -77,49 +77,11 @@ sub result_files {
     my $job_dir     = $job->job_dir;
 
     $self->{'_results_files'} = {
-      'output_file' => EnsEMBL::Web::TmpFile::VcfTabix->new('filename' => "$job_dir/$job_config->{'output_file'}")
+      'output_file' => EnsEMBL::Web::TmpFile::ToolsOutput->new('filename' => "$job_dir/$output_file")
     };
   }
 
   return $self->{'_results_files'};
-}
-
-sub get_all_variants_in_slice_region {
-  ## Gets all the result variants for the given job in the given slice region
-  ## @param Job object
-  ## @param Slice object
-  ## @return Array of result data hashrefs
-  my ($self, $job, $slice) = @_;
-
-  my $ticket_name = $job->ticket->ticket_name;
-  my $job_id      = $job->job_id;
-  my $s_name      = $slice->seq_region_name;
-  my $s_start     = $slice->start;
-  my $s_end       = $slice->end;
-
-  my @variants;
-
-  for ($job->result) {
-
-    my $var   = $_->result_data->raw;
-    my $chr   = $var->{'chr'};
-    my $start = $var->{'start'};
-    my $end   = $var->{'end'};
-
-    next unless $s_name eq $chr && (
-      $start >= $s_start && $end <= $s_end ||
-      $start < $s_start && $end <= $s_end && $end > $s_start ||
-      $start >= $s_start && $start <= $s_end && $end > $s_end ||
-      $start < $s_start && $end > $s_end && $start < $s_end
-    );
-
-    $var->{'tl'} = $self->create_url_param({'ticket_name' => $ticket_name, 'job_id' => $job_id, 'result_id' => $_->result_id});
-
-    push @variants, $var;
-
-  };
-
-  return \@variants;
 }
 
 sub handle_download {
@@ -128,34 +90,14 @@ sub handle_download {
   my $hub = $self->hub;
   my $job = $self->get_requested_job;
 
-  # if downloading the input file
-  if ($hub->param('input')) {
+  my $output_file = $hub->param('output_file');
+  my $file      = $self->result_files->{$output_file};
+  my $filename  = $job->ticket->ticket_name . $file;
 
-    my $filename  = $job->job_data->{'input_file'};
-    my $content   = file_get_contents(join('/', $job->job_dir, $filename), sub { s/\R/\r\n/r });
-
-    $r->headers_out->add('Content-Type'         => 'text/plain');
-    $r->headers_out->add('Content-Length'       => length $content);
-    $r->headers_out->add('Content-Disposition'  => sprintf 'attachment; filename=%s', $filename);
-
-    print $content;
-
-  # if downloading the result file in any specified format
-  } else { 
-    my $format    = $hub->param('format')   || 'vcf';
-    my $location  = $hub->param('location') || '';
-    my $filter    = $hub->param('filter')   || '';
-    my $file      = $self->result_files->{'output_file'};
-    my $filename  = join('.', $job->ticket->ticket_name, $location || (), $filter || (), $format eq 'txt' ? () : $format, $format eq 'vcf' ? '' : 'txt') =~ s/\s+/\_/gr;
-
-    $r->headers_out->add('Content-Type'         => 'text/plain');
-    $r->headers_out->add('Content-Disposition'  => sprintf 'attachment; filename=%s', $filename);
-
-    $file->content_iterate({'format' => $format, 'location' => $location, 'filter' => $filter}, sub {
-      print "$_\r\n" for @_;
-      $r->rflush;
-    });
-  }
+  $r->headers_out->add('Content-Type'         => 'text/plain');
+  $r->headers_out->add('Content-Disposition'  => sprintf 'attachment; filename=%s', $output_file);
+ 
+  return $r->sendfile(join('/', $job->job_dir, $output_file));
 }
 
 sub get_form_details {

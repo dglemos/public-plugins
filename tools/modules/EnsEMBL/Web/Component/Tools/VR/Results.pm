@@ -24,10 +24,10 @@ use warnings;
 
 use URI::Escape qw(uri_unescape);
 use HTML::Entities qw(encode_entities);
-use POSIX qw(ceil);
+# use POSIX qw(ceil);
 # use Bio::EnsEMBL::Variation::Utils::Constants qw(%OVERLAP_CONSEQUENCES);
-use Bio::EnsEMBL::VEP::Constants qw(%FIELD_DESCRIPTIONS);
-use EnsEMBL::Web::Utils::FormatText qw(helptip);
+# use Bio::EnsEMBL::VEP::Constants qw(%FIELD_DESCRIPTIONS);
+# use EnsEMBL::Web::Utils::FormatText qw(helptip);
 use EnsEMBL::Web::Component::Tools::NewJobButton;
 
 use parent qw(EnsEMBL::Web::Component::Tools::VR);
@@ -265,7 +265,7 @@ sub content {
     'key' => $_,
     'title' => ($header_titles{$_} || $_),
     'sort' => $table_sorts{$_} || 'string',
-    'help' => $FIELD_DESCRIPTIONS{$_} || $header_extra_descriptions->{$_},
+    # 'help' => $FIELD_DESCRIPTIONS{$_} || $header_extra_descriptions->{$_},
   }} @$headers;
 
   $html .= '<div><h3>Results preview</h3>';
