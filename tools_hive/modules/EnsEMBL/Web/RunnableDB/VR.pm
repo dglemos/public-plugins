@@ -32,6 +32,8 @@ use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
 use EnsEMBL::Web::Utils::FileSystem qw(list_dir_contents);
 use Bio::EnsEMBL::VEP::VariantRecoder;
 
+use Data::Dumper;
+
 sub fetch_input {
   my $self = shift;
 
@@ -55,7 +57,8 @@ sub run {
   $options->{$_}  = 1 for qw(force quiet safe); # we need these options set on always!
   $options->{$_}  = sprintf '%s/%s', $work_dir, delete $config->{$_} for qw(input_file output_file);
   $options->{$_}  = $config->{$_} eq 'yes' ? 1 : $config->{$_} for grep { defined $config->{$_} && $config->{$_} ne 'no' } keys %$config;
-  
+  $options->{output_file} = $work_dir . '/output_file'; 
+
   # are we using cache?
   # if ($self->param('cache_dir')){
   #   $options->{"cache"}    = 1;
@@ -67,6 +70,7 @@ sub run {
   #   }
   # } else {
     $options->{"database"} = 1;
+    $options->{"db_version"} = 101;
   # }
   
   # send warnings to STDERR
@@ -82,9 +86,13 @@ sub run {
   my $reconnect_when_lost_bak = $self->dbc->reconnect_when_lost;
   $self->dbc->reconnect_when_lost(1);
 
+  $self->warning("OPTIONS: ", Dumper $options);
+
   # create a VEP runner and run the job
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);
-  $runner->recode_all;
+  my $results = $runner->recode_all;
+
+  $self->warning("RESULTS:", Dumper $results);
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
