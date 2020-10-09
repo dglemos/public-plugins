@@ -28,7 +28,7 @@ use parent qw(EnsEMBL::Web::RunnableDB);
 
 use EnsEMBL::Web::Exceptions;
 use EnsEMBL::Web::SystemCommand;
-use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
+use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents file_append_contents);
 use EnsEMBL::Web::Utils::FileSystem qw(list_dir_contents);
 use Bio::EnsEMBL::VEP::VariantRecoder;
 
@@ -86,13 +86,15 @@ sub run {
   my $reconnect_when_lost_bak = $self->dbc->reconnect_when_lost;
   $self->dbc->reconnect_when_lost(1);
 
-  $self->warning("OPTIONS: ", Dumper $options);
+  $self->warning(Dumper $options);
 
   # create a VEP runner and run the job
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);
   my $results = $runner->recode_all;
 
-  $self->warning("RESULTS:", Dumper $results);
+  $self->warning(Dumper $results);
+
+  file_append_contents($options->{output_file}, Dumper $results, sprintf("%s\n", '=' x 10));
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
