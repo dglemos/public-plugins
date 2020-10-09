@@ -94,7 +94,10 @@ sub run {
 
   $self->warning(Dumper $results);
 
-  file_append_contents($options->{output_file}, Dumper $results, sprintf("%s\n", '=' x 10));
+  my $json = JSON->new;
+  $json->pretty;
+
+  file_append_contents($options->{output_file}, $json->encode($results), sprintf("%s\n", '=' x 10));
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
