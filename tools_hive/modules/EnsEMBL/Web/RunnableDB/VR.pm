@@ -31,7 +31,7 @@ use EnsEMBL::Web::SystemCommand;
 use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
 use EnsEMBL::Web::Utils::FileSystem qw(list_dir_contents);
 use Bio::EnsEMBL::VEP::VariantRecoder;
-
+use FileHandle;
 sub fetch_input {
   my $self = shift;
 
@@ -90,6 +90,11 @@ sub run {
   my $results = $runner->recode_all;
 
   $self->warning(Dumper $results);
+
+
+  my $fh = FileHandle->new("$work_dir/output_test", 'w');
+  print $fh "rs699\tENST00000366667.5:c.803T>C\tNC_000001.11:230710047:A:G\tRCV000835695\n";
+  $fh->close();
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
