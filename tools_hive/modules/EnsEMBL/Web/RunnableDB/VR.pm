@@ -28,8 +28,7 @@ use parent qw(EnsEMBL::Web::RunnableDB);
 
 use EnsEMBL::Web::Exceptions;
 use EnsEMBL::Web::SystemCommand;
-use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents file_append_contents);
-use EnsEMBL::Web::Utils::FileSystem qw(list_dir_contents);
+use EnsEMBL::Web::Utils::FileHandler qw(file_append_contents);
 use Bio::EnsEMBL::VEP::VariantRecoder;
 
 use Data::Dumper;
@@ -49,35 +48,17 @@ sub run {
   my $options         = $self->param('script_options') || {};
   my $log_file        = "$work_dir/lsf_log.txt";
 
-  # path for VEP_plugins (gets pushed to INC by VEP::Runner)
-  # if (my $plugins_path = $self->param('plugins_path')) {
-  #   $options->{'dir_plugins'} = $plugins_path =~ /^\// ? $plugins_path : sprintf('%s/%s', $self->param('code_root'), $plugins_path);
-  # }
-
   $options->{$_}  = 1 for qw(force quiet safe); # we need these options set on always!
   $options->{$_}  = sprintf '%s/%s', $work_dir, delete $config->{$_} for qw(input_file output_file);
   $options->{$_}  = $config->{$_} eq 'yes' ? 1 : $config->{$_} for grep { defined $config->{$_} && $config->{$_} ne 'no' } keys %$config;
   $options->{output_file} = $work_dir . '/output_file'; 
 
-  # are we using cache?
-  # if ($self->param('cache_dir')){
-  #   $options->{"cache"}    = 1;
-  #   $options->{"dir"}      = $self->param('cache_dir');
-  #   $options->{"database"} = 0;
-  # 
-  #   if(my $fasta_dir = $self->param('fasta_dir')) {
-  #     $options->{"fasta_dir"} = $fasta_dir;
-  #   }
-  # } else {
-    $options->{"database"} = 1;
-    $options->{"db_version"} = 101;
-  # }
+  # NOT SURE IS NECESSARY
+  $options->{"database"} = 1;
+  $options->{"db_version"} = 101; # DELETE
   
   # send warnings to STDERR
   # $options->{"warning_file"} = "STDERR";
-
-  # tell VEP to write an additional output file we'll import to the results table
-  $options->{web_output} = $options->{output_file}.'.web';
 
   # save the result file name for later use
   $self->param('result_file', $options->{'output_file'});
@@ -88,44 +69,30 @@ sub run {
 
   $self->warning(Dumper $options);
 
-  # create a VEP runner and run the job
+  # create a Variant Recoder runner and run the job
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);
   my $results = $runner->recode_all;
 
   $self->warning(Dumper $results);
 
+  my $fh = FileHandle->new("$work_dir/output_test", 'w');
+  print $fh "rs699\tENST00000366667.5:c.803T>C\tNC_000001.11:230710047:A:G\tRCV000835695\n";
+  $fh->close();
+
   my $json = JSON->new;
   $json->pretty;
 
-  file_append_contents($options->{output_file}, $json->encode($results), sprintf("%s\n", '=' x 10));
+  file_append_contents($options->{output_file}, $json->encode($results));
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
 
-  # tabix index results
-  my $out = $options->{output_file};
-  # if(-e $out) {
-  #   my $tmp = $out.'.tmp';
-  #   system(sprintf('grep "#" %s > %s', $out, $tmp));
-  #   system(sprintf('grep -v "#" %s | sort -k1,1 -k2,2n >> %s', $out, $tmp));
-  #   system("bgzip -c $tmp > $out");
-  #   system("tabix -p vcf $out");
-  #   unlink($tmp);
-  # }
-  
   return 1;
 }
 
 sub write_output {
   my $self        = shift;
   my $job_id      = $self->param('job_id');
-  # my $result_web  = $self->param('result_file').".web";
-  # return 1 unless -e $result_web;
-  # 
-  # my @result_keys = qw(chr start end allele_string strand variation_name consequence_type);
-  # my @rows        = file_get_contents($result_web, sub { chomp; my @cols = split /\t/, $_; return { map { $result_keys[$_] => $cols[$_] } 0..$#result_keys } });
-  # 
-  # $self->save_results($job_id, {}, \@rows);
 
   return 1;
 }
