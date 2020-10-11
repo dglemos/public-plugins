@@ -82,12 +82,12 @@ sub run {
     my @keys = keys %{$result_hash};
     foreach my $allele (@keys) {
       my $allele_result = $result_hash->{$allele};
-      my $hgvsg_print = join(',', @{$allele_result->{'hgvsg'}});
-      my $hgvsc_print = join(',', @{$allele_result->{'hgvsc'}});
-      my $hgvsp_print = join(',', @{$allele_result->{'hgvsp'}});
-      my $spdi_print = join(',', @{$allele_result->{'spdi'}});
-      my $id_print = join(',', @{$allele_result->{'id'}});
-      my $vcf_print = join(',', @{$allele_result->{'vcf_string'}});
+      my $hgvsg_print = join(', ', @{$allele_result->{'hgvsg'}});
+      my $hgvsc_print = join(', ', @{$allele_result->{'hgvsc'}});
+      my $hgvsp_print = join(', ', @{$allele_result->{'hgvsp'}});
+      my $spdi_print = join(', ', @{$allele_result->{'spdi'}});
+      my $id_print = join(', ', @{$allele_result->{'id'}});
+      my $vcf_print = join(', ', @{$allele_result->{'vcf_string'}});
       $print_input = $allele."\t".$allele_result->{'input'}."\t".$hgvsg_print."\t".$hgvsc_print."\t".$hgvsp_print."\t".$spdi_print."\t".$id_print."\t".$vcf_print."\n";
     }
   }
@@ -97,11 +97,6 @@ sub run {
   $fh->close();
 
   # file_append_contents($options->{output_file}, $json->encode($results));
-
-  # EXAMPLE
-  my $fh = FileHandle->new("$work_dir/output_test", 'w');
-  print $fh "rs699\tENST00000366667.5:c.803T>C\tNC_000001.11:230710047:A:G\tRCV000835695\n";
-  $fh->close();
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
