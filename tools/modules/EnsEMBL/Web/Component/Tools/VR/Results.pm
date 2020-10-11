@@ -47,7 +47,7 @@ sub content {
   my $output_file  = 'output_test';
 
   my @rows;
-  my @headers = qw/input hgvs spdi id/;
+  my @headers = qw/allele input hgvsg hgvsc hgvsp spdi id vcf_string/;
 
   my @content = file_get_contents(join('/', $job->job_dir, $output_file), sub { s/\R/\r\n/r });
 
