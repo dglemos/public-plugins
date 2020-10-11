@@ -22,6 +22,7 @@ package EnsEMBL::Web::Component::Tools::VR::Results;
 use strict;
 use warnings;
 
+use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
 use EnsEMBL::Web::Component::Tools::NewJobButton;
 
 use parent qw(EnsEMBL::Web::Component::Tools::VR);
@@ -37,11 +38,8 @@ sub content {
   return '' if !$job || $job->status ne 'done';
 
   my $job_data  = $job->job_data;
+  my $job_config  = $job->dispatcher_data->{'config'};
   my $species   = $job->species;
-  my @warnings  = grep { $_->data && ($_->data->{'type'} || '') eq 'VEPWarning' } @{$job->job_message};
-
-  # this method reconstitutes the Tmpfile objects from the filenames
-  my $output_file_obj = $object->result_files->{'output_file'};
 
   my $ticket_name = $object->parse_url_param->{'ticket_name'};
 
