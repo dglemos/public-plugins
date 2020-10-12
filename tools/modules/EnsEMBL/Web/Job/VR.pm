@@ -38,163 +38,23 @@ sub prepare_to_dispatch {
 
   $vr_configs->{'species'} = lc $species;
 
-  # select transcript set
-  # $vr_configs->{'refseq'}  = 'yes' if $sp_details->{'refseq'} && ($job_data->{'core_type'} // '') eq 'refseq';
-  # $vr_configs->{'merged'}  = 'yes' if $sp_details->{'refseq'} && ($job_data->{'core_type'} // '') eq 'merged';
-  # $vr_configs->{'gencode_basic'} = 'yes' if ($job_data->{'core_type'} // '') eq 'gencode_basic';
-
-  # # filters
-  # my $frequency_filtering = $job_data->{'frequency'};
-
-  # if ($species eq 'Homo_sapiens') {
-  # 
-  #   if ($frequency_filtering eq 'common') {
-  #     $vep_configs->{'filter_common'} = 'yes';
-  #   } elsif($frequency_filtering eq 'advanced') {
-  #     $vep_configs->{'check_frequency'} = 'yes';
-  #     $vep_configs->{$_} = $job_data->{$_} || 0 for qw(freq_pop freq_freq freq_gt_lt freq_filter);
-  #   }
-  # }
-
-  # my $summary = $job_data->{'summary'};
-  # if ($summary ne 'no') {
-  #   $vep_configs->{$summary} = 'yes';
-  # }
-
-  # for (grep $sp_details->{$_}, qw(regulatory sift polyphen)) {
-  #   my $value = $job_data->{$_ . ($_ eq 'regulatory' ? "_$species" : '')};
-  #   $vep_configs->{$_} = $value if $value && $value ne 'no';
-  # }
-
   # buffer size
   $vr_configs->{buffer_size} = 1;
 
-  # regulatory
-  # if($sp_details->{'regulatory'} && $vep_configs->{'regulatory'}) {
-  # 
-  #   # cell types
-  #   if($vep_configs->{'regulatory'} eq 'cell') {
-  #     my @cell_types = grep { length $_ } ref $job_data->{"cell_type_$species"} ? @{$job_data->{"cell_type_$species"}} : $job_data->{"cell_type_$species"};
-  #     $vep_configs->{'cell_type'} = join ",", @cell_types if scalar @cell_types;
-  #   }
-  # 
-  #   $vep_configs->{'regulatory'} = 'yes';
-  #   $vep_configs->{'buffer_size'} = 1 if ($vep_configs->{buffer_size} > 1);
-  # }
-
-  # check existing
-  my $check_ex = $job_data->{'check_existing'};
-
-  if ($check_ex && $check_ex ne 'no') {
-    if($check_ex eq 'yes') {
-      $vr_configs->{'check_existing'} = 'yes';
-    } elsif ($check_ex eq 'no_allele') {
-      $vr_configs->{'check_existing'} = 'yes';
-      $vr_configs->{'no_check_alleles'} = 'yes';
-    }
-
-    # # Allele frequencies in human
-    # if ($species eq 'Homo_sapiens') {
-    #   foreach my $pop_af (qw(af af_1kg af_esp af_gnomad)) {
-    #     $vep_configs->{$pop_af} = $job_data->{$pop_af} if ($job_data->{$pop_af});
-    #   }
-    #   $vep_configs->{'pubmed'} = $job_data->{'pubmed'} if $job_data->{'pubmed'};
-    # }
-  }
-
   # i/o files
   $vr_configs->{'input_file'}  = $job_data->{'input_file'};
-  # $vr_configs->{'output_file'} = 'output.vcf';
-  # $vep_configs->{'stats_file'}  = 'stats.txt';
+
+  $vr_configs->{'result_headers'}  = $job_data->{'result_headers'};
 
   # extra and identifiers
   $job_data->{$_} and $vr_configs->{$_} = $job_data->{$_} for qw(id spdi hgvsc hgvsg hgvsp vcf_string);
 
-  $vr_configs->{distance} = 0 if($job_data->{distance} eq '0' || $job_data->{distance} eq "");
-
-  # check for incompatibilities
-  # if ($vep_configs->{'most_severe'} || $vep_configs->{'summary'}) {
-  #   delete $vep_configs->{$_} for(qw(coding_only protein symbol sift polyphen ccds canonical numbers domains biotype tsl appris mane));
-  # }
-
-  # plugins
-  # $vep_configs->{plugin} = $self->_configure_plugins($job_data);
-
-  return { 'species' => $vr_configs->{'species'}, 'work_dir' => $rose_object->job_dir, 'config' => $vr_configs };
+  return {
+    'species' => $vr_configs->{'species'},
+    'work_dir' => $rose_object->job_dir,
+    'config' => $vr_configs
+  };
 }
-
-# sub _configure_plugins {
-#   my $self = shift;
-#   my $job_data = shift;
-# 
-#   # get plugin config into a hash keyed on key
-#   my $pl = $self->hub->species_defs->multi_val('ENSEMBL_VEP_PLUGIN_CONFIG');
-#   return [] unless $pl;
-#   my %plugin_config = map {$_->{key} => $_} @{$pl->{plugins} || []};
-# 
-#   my @active_plugins = ();
-# 
-#   foreach my $pl_key(grep {$_ =~ /^plugin\_/ && $job_data->{$_} eq $_} keys %$job_data) {
-# 
-#     $pl_key =~ s/^plugin\_//;
-#     my $plugin = $plugin_config{$pl_key};
-#     next unless $plugin;
-# 
-#     my @params;
-# 
-#     foreach my $param(@{$plugin->{params}}) {
-# 
-#       # links to something in the form
-#       if($param =~ /^\@/) {
-#         $param =~ s/^\@//;
-# 
-#         my @matched = ();
-# 
-#         # fuzzy match?
-#         if($param =~ /\*/) {
-#           $param =~ s/\*/\.\*/;
-#           @matched = grep {$_->{name} =~ /$param/} @{$plugin->{form}};
-#         }
-# 
-#         else {
-#           @matched = grep {$_->{name} eq $param} @{$plugin->{form}};
-#         }
-# 
-#         foreach my $el(@matched) {
-#           my $val = $job_data->{'plugin_'.$pl_key.'_'.$el->{name}};
-# 
-#           $val = join(',', @$val) if $val && ref($val) eq 'ARRAY';
-# 
-#           # remove any spaces
-#           $val =~ s/,\s+/,/g if $val && $val =~ /,/;
-# 
-#           if(defined($val) && $val ne '' && $val ne 'no') {
-#             push @params, $val;
-#           }
-#         }
-#       }
-# 
-#       # otherwise just plain text
-#       else {
-#         push @params, $param;
-#       }
-#     }
-# 
-#     push @active_plugins, join(",", ($pl_key, @params));
-#   }
-# 
-#   return \@active_plugins;
-# }
-
-# sub get_dispatcher_class {
-#   ## For smaller VEP jobs, we use the VEP REST API dispatcher, otherwise whatever is configured in SiteDefs.
-#   my ($self, $data) = @_;
-# 
-#   my $filesize  = -s join '/', $data->{'work_dir'}, $data->{'config'}->{'input_file'};
-#   my $limit     = REST_DISPATCHER_FILESIZE_LIMIT || 0;
-# 
-#   return $limit > $filesize ? 'VEPRest' : undef;
-# }
 
 sub _species_details {
   ## @private
@@ -204,9 +64,6 @@ sub _species_details {
   my $db_config = $sd->get_config($species, 'databases');
 
   return {
-    # 'sift'        => $db_config->{'DATABASE_VARIATION'}{'SIFT'},
-    # 'polyphen'    => $db_config->{'DATABASE_VARIATION'}{'POLYPHEN'},
-    # 'regulatory'  => $sd->get_config($species, 'REGULATORY_BUILD'),
     'refseq'      => $db_config->{'DATABASE_OTHERFEATURES'} && $sd->get_config($species, 'VEP_REFSEQ')
   };
 }
