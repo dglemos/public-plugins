@@ -49,7 +49,7 @@ sub run {
   my $options         = $self->param('script_options') || {};
   my $log_file        = "$work_dir/lsf_log.txt";
 
-  $options->{$_}  = 1 for qw(force quiet safe); # we need these options set on always!
+  # $options->{$_}  = 1 for qw(force quiet safe); # we need these options set on always!
   $options->{$_}  = sprintf '%s/%s', $work_dir, delete $config->{$_} for qw(input_file output_file);
   $options->{$_}  = $config->{$_} eq 'yes' ? 1 : $config->{$_} for grep { defined $config->{$_} && $config->{$_} ne 'no' } keys %$config;
   $options->{output_file} = $work_dir . '/output_file'; 
@@ -77,18 +77,29 @@ sub run {
   my $json = JSON->new;
   $json->pretty;
 
+  my $result_headers = $config->{'result_headers'};
+  my @headers_from_user = @$result_headers;
+
   my $print_input = '';
   foreach my $result_hash (@$results) {
     my @keys = keys %{$result_hash};
     foreach my $allele (@keys) {
       my $allele_result = $result_hash->{$allele};
-      my $hgvsg_print = join(', ', @{$allele_result->{'hgvsg'}});
-      my $hgvsc_print = join(', ', @{$allele_result->{'hgvsc'}});
-      my $hgvsp_print = join(', ', @{$allele_result->{'hgvsp'}});
-      my $spdi_print = join(', ', @{$allele_result->{'spdi'}});
-      my $id_print = join(', ', @{$allele_result->{'id'}});
-      my $vcf_print = join(', ', @{$allele_result->{'vcf_string'}});
-      $print_input = $allele."\t".$allele_result->{'input'}."\t".$hgvsg_print."\t".$hgvsc_print."\t".$hgvsp_print."\t".$spdi_print."\t".$id_print."\t".$vcf_print."\n";
+      foreach my $header_user (@headers_from_user) {
+        if($allele_result->{$header_user}) {
+          my $join_result = join(', ', @{$allele_result->{$header_user}});
+          $print_input = $print_input."\t".$join_result;
+        }
+      }
+      $print_input = $print_input."\n";
+      # my $hgvsg_print = join(', ', @{$allele_result->{'hgvsg'}});
+      # my $hgvsc_print = join(', ', @{$allele_result->{'hgvsc'}});
+      # my $hgvsp_print = join(', ', @{$allele_result->{'hgvsp'}});
+      # my $spdi_print = join(', ', @{$allele_result->{'spdi'}});
+      # my $id_print = join(', ', @{$allele_result->{'id'}});
+      # my $vcf_print = join(', ', @{$allele_result->{'vcf_string'}});
+      # 
+      # $print_input = $allele."\t".$allele_result->{'input'}."\t".$hgvsg_print."\t".$hgvsc_print."\t".$hgvsp_print."\t".$spdi_print."\t".$id_print."\t".$vcf_print."\n";
     }
   }
 
