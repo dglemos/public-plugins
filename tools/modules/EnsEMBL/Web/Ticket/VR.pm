@@ -23,14 +23,11 @@ use strict;
 use warnings;
 
 use List::Util qw(first);
-use Bio::EnsEMBL::Variation::Utils::VEP qw(detect_format);
 
 use EnsEMBL::Web::Exceptions;
 use EnsEMBL::Web::Job::VR;
 
 use parent qw(EnsEMBL::Web::Ticket);
-
-# use constant VEP_FORMAT_DOC => '/info/docs/tools/vep/vep_formats.html';
 
 sub init_from_user_input {
   ## Abstract method implementation
@@ -51,15 +48,16 @@ sub init_from_user_input {
   # if no data found in file/url
   throw exception('InputError', 'No input data is present') unless $file_content;
 
-  # detect file format
-  # my $detected_format;
-  # try {
-  #   first { m/^[^\#]/ && ($detected_format = detect_format($_)) } split /\R/, $file_content;
-  # } catch {
-  #   throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VEP_FORMAT_DOC), {'message_is_html' => 1});
-  # };
+  my @result_headers = qw/allele input/;
 
   my $job_data = { map { my @val = $hub->param($_); $_ => @val > 1 ? \@val : $val[0] } grep { $_ !~ /^text/ && $_ ne 'file' } $hub->param };
+
+  my @headers = qw/hgvsg hgvsc hgvsp spdi id vcf_string/;
+  foreach my $header_title (@headers) {
+    if($hub->param($header_title)) {
+     push @result_headers, $header_title;
+    }
+  }
 
   # check required
   if(my $required_string = $job_data->{required_params}) {
@@ -85,7 +83,7 @@ sub init_from_user_input {
 
   $job_data->{'species'}    = $species;
   $job_data->{'input_file'} = $file_name;
-  # $job_data->{'format'}     = $detected_format;
+  $job_data->{'result_headers'} = \@result_headers;
 
   $self->add_job(EnsEMBL::Web::Job::VR->new($self, {
     'job_desc'    => $description,

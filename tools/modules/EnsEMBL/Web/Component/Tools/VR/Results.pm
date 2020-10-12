@@ -47,7 +47,8 @@ sub content {
   my $output_file  = 'output_test';
 
   my @rows;
-  my @headers = qw/allele input hgvsg hgvsc hgvsp spdi id vcf_string/;
+  my $result_headers = $job_config->{'result_headers'};
+  my @headers = @$result_headers;
 
   my @content = file_get_contents(join('/', $job->job_dir, $output_file), sub { s/\R/\r\n/r });
 
@@ -61,12 +62,12 @@ sub content {
 
   # niceify for table
   my %header_titles = (
-    'ID'                  => 'Variant identifier',
-    'HGVSG'               => 'HGVS genomic',
-    'HGVSC'               => 'HGVS transcript',
-    'HGVSP'               => 'HGVS protein',
-    'VCF_FORMAT'          => 'VCF format',
-    'SPDI'                => 'SPDI',
+    'id'                  => 'Variant identifier',
+    'hgvsg'               => 'HGVS genomic',
+    'hgvsc'               => 'HGVS transcript',
+    'hgvsp'               => 'HGVS protein',
+    'vcf_format'          => 'VCF format',
+    'spdi'                => 'SPDI',
   );
   for (grep {/\_/} @headers) {
     $header_titles{$_} ||= $_ =~ s/\_/ /gr;
