@@ -74,40 +74,49 @@ sub run {
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);
   my $results = $runner->recode_all;
 
-  my $json = JSON->new;
-  $json->pretty;
-
-  my $result_headers = $config->{'result_headers'};
-  my @headers_from_user = @$result_headers;
-
-  my $print_input = '';
+  my @print_output = ();
   foreach my $result_hash (@$results) {
     my @keys = keys %{$result_hash};
     foreach my $allele (@keys) {
       my $allele_result = $result_hash->{$allele};
-      foreach my $header_user (@headers_from_user) {
-        if($allele_result->{$header_user}) {
-          my $join_result = join(', ', @{$allele_result->{$header_user}});
+      my $print_input = $allele."\t".$allele_result->{'input'};
+
+      if($config->{'hgvsg'} eq 'yes') {
+        my $join_result = join(', ', @{$allele_result->{'hgvsg'}});
+        $print_input = $print_input."\t".$join_result;
+      }
+      if($config->{'hgvsc'} eq 'yes') {
+        my $join_result = join(', ', @{$allele_result->{'hgvsc'}});
+        $print_input = $print_input."\t".$join_result;
+      }
+      if($config->{'hgvsp'} eq 'yes') {
+        if($allele_result->{'hgvsp'}) {
+          my $join_result = join(', ', @{$allele_result->{'hgvsp'}});
           $print_input = $print_input."\t".$join_result;
         }
+        else {
+          $print_input = $print_input."\t-";
+        }
       }
-      $print_input = $print_input."\n";
-      # my $hgvsg_print = join(', ', @{$allele_result->{'hgvsg'}});
-      # my $hgvsc_print = join(', ', @{$allele_result->{'hgvsc'}});
-      # my $hgvsp_print = join(', ', @{$allele_result->{'hgvsp'}});
-      # my $spdi_print = join(', ', @{$allele_result->{'spdi'}});
-      # my $id_print = join(', ', @{$allele_result->{'id'}});
-      # my $vcf_print = join(', ', @{$allele_result->{'vcf_string'}});
-      # 
-      # $print_input = $allele."\t".$allele_result->{'input'}."\t".$hgvsg_print."\t".$hgvsc_print."\t".$hgvsp_print."\t".$spdi_print."\t".$id_print."\t".$vcf_print."\n";
+      if($config->{'spdi'} eq 'yes') {
+        my $join_result = join(', ', @{$allele_result->{'spdi'}});
+        $print_input = $print_input."\t".$join_result;
+      }
+      if($config->{'id'} eq 'yes') {
+        my $join_result = join(', ', @{$allele_result->{'id'}});
+        $print_input = $print_input."\t".$join_result;
+      }
+      if($config->{'vcf_string'} eq 'yes') {
+        my $join_result = join(', ', @{$allele_result->{'vcf_string'}});
+        $print_input = $print_input."\t".$join_result;
+      }
+      push @print_output, $print_input;
     }
   }
 
   my $fh = FileHandle->new("$work_dir/output_test", 'w');
-  print $fh $print_input;
+  print $fh join("\n", @print_output);
   $fh->close();
-
-  # file_append_contents($options->{output_file}, $json->encode($results));
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
