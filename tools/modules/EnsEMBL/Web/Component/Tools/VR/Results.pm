@@ -137,7 +137,8 @@ sub get_items_in_list {
     foreach my $item (@items_list) {
       my $item_url = $item;
       if($item =~ /^rs/) {
-        $item_url = qq{<a href="https://www.ncbi.nlm.nih.gov/snp/" rel="external" class="constant">$item</a>};
+        $item_url = $hub->get_ExtURL_link($item, 'DBSNP', $item);
+        # $item_url = qq{<a href="https://www.ncbi.nlm.nih.gov/snp/$item" rel="external" class="constant">$item</a>};
       }
       push(@items_with_url, $item_url);
     }
