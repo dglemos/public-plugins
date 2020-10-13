@@ -138,7 +138,9 @@ sub get_items_in_list {
       my $item_url = $item;
       if($item =~ /^rs/) {
         $item_url = $hub->get_ExtURL_link($item, 'DBSNP', $item);
-        # $item_url = qq{<a href="https://www.ncbi.nlm.nih.gov/snp/$item" rel="external" class="constant">$item</a>};
+      }
+      if($item =~ /^COS/) {
+        $item_url = $hub->get_ExtURL_link($item, 'COSMIC', $item);
       }
       push(@items_with_url, $item_url);
     }
