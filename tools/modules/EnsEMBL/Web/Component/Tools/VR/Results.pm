@@ -134,7 +134,13 @@ sub get_items_in_list {
 
   # Prettify format for phenotype entries
   if ($type eq 'id') {
-    @items_with_url = $self->prettify_id(\@items_list);
+    foreach my $item (@items_list) {
+      my $item_url = $item;
+      if($item =~ /^rs/) {
+        $item_url = qq{<a href="https://www.ncbi.nlm.nih.gov/snp/" rel="external" class="constant">$item</a>};
+      }
+      push(@items_with_url, $item_url);
+    }
   }
 
   if (scalar @items_list > $min_items_count) {
@@ -144,19 +150,6 @@ sub get_items_in_list {
   else {
     return join('<br />',@items_with_url);
   }
-}
-
-sub prettify_id {
-  my ($self, $entries) = @_;
-  my @result;
-
-  my $hub = $self->hub;
-
-  foreach my $entry (@$entries) {
-    print Dumper($entry);
-  }
-
-  return @result;
 }
 
 sub zmenu_link {
