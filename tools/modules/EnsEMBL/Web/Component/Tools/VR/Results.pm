@@ -78,7 +78,7 @@ sub content {
     foreach my $header (@headers) {
       if ($row->{$header} && $row->{$header} ne '' && $row->{$header} ne '-') {
         if ($header eq 'id') {
-          $row->{$header} = $self->get_items_in_list($row_id, 'pubmed', 'PubMed IDs', $row->{$header}, $species);
+          $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
         }
       }
       $row_id++;
@@ -113,6 +113,50 @@ sub content {
   $html .= '</div>';
 
   return $html;
+}
+
+# Get a list of comma separated items and transforms it into a bullet point list
+sub get_items_in_list {
+  my $self    = shift;
+  my $row_id  = shift;
+  my $type    = shift;
+  my $label   = shift;
+  my $data    = shift;
+  my $species = shift;
+  my $min_items_count = shift;
+
+  my $hub = $self->hub;
+
+  $min_items_count ||= 5;
+
+  my @items_list = split(', ',$data);
+  my @items_with_url;
+
+  # Prettify format for phenotype entries
+  if ($type eq 'id') {
+    @items_with_url = $self->prettify_id(\@items_list);
+  }
+
+  if (scalar @items_list > $min_items_count) {
+    my $div_id = 'row_'.$row_id.'_'.$type;
+    return $self->display_items_list($div_id, $type, $label, \@items_with_url, \@items_list);
+  }
+  else {
+    return join('<br />',@items_with_url);
+  }
+}
+
+sub prettify_id {
+  my ($self, $entries) = @_;
+  my @result;
+
+  my $hub = $self->hub;
+
+  foreach my $entry (@$entries) {
+    print Dumper($entry);
+  }
+
+  return @result;
 }
 
 sub zmenu_link {
