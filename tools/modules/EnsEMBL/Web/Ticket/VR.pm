@@ -48,7 +48,7 @@ sub init_from_user_input {
   # if no data found in file/url
   throw exception('InputError', 'No input data is present') unless $file_content;
 
-  my @result_headers = qw/allele input/;
+  my @result_headers = qw/input allele/;
 
   my $job_data = { map { my @val = $hub->param($_); $_ => @val > 1 ? \@val : $val[0] } grep { $_ !~ /^text/ && $_ ne 'file' } $hub->param };
 

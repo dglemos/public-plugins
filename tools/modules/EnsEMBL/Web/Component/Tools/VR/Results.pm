@@ -43,14 +43,26 @@ sub content {
 
   my $ticket_name = $object->parse_url_param->{'ticket_name'};
 
+  my $button_url = $hub->url({'function' => undef, 'expand_form' => 'true'});
+  my $new_job_button = EnsEMBL::Web::Component::Tools::NewJobButton->create_button( $button_url );
+
   # THIS OUTPUT IS DEFINED IN THE RUNNABLE
   my $output_file  = 'output_test';
+  my $output_file_json = 'output_file.json';
 
   my @rows;
   my $result_headers = $job_config->{'result_headers'};
   my @headers = @$result_headers;
 
+  # From output file in tab format
   my @content = file_get_contents(join('/', $job->job_dir, $output_file), sub { s/\R/\r\n/r });
+
+  # Download
+  my $html = '';
+  if (scalar @content) {
+    my $down_url  = $object->download_url({output_file => $output_file});
+    $html .= qq{<p><div class="component-tools tool_buttons"><a class="export" href="$down_url">Download all results</a><div class="left-margin">$new_job_button</div></div></p>};
+  }
 
   my @rows = ();
   foreach my $line (@content) {
@@ -58,6 +70,19 @@ sub content {
     my @split     = split /\t/, $line;
     my %row_data  = map { $headers[$_] => $split[$_] } 0..$#headers;
     push @rows, \%row_data;
+  }
+
+  # linkify row content
+  my $row_id = 0;
+  foreach my $row (@rows) {
+    foreach my $header (@headers) {
+      if ($row->{$header} && $row->{$header} ne '' && $row->{$header} ne '-') {
+        if ($header eq 'id') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'pubmed', 'PubMed IDs', $row->{$header}, $species);
+        }
+      }
+      $row_id++;
+    }
   }
 
   # niceify for table
@@ -68,6 +93,8 @@ sub content {
     'hgvsp'               => 'HGVS protein',
     'vcf_format'          => 'VCF format',
     'spdi'                => 'SPDI',
+    'allele'              => 'Allele',
+    'input'               => 'Uploaded variant'
   );
   for (grep {/\_/} @headers) {
     $header_titles{$_} ||= $_ =~ s/\_/ /gr;
@@ -80,7 +107,7 @@ sub content {
   }} @headers;
 
   my $table = $self->new_table(\@table_headers, \@rows, { data_table => 1, exportable => 0, data_table_config => {bLengthChange => 'false', bFilter => 'false'}, });
-  my $html .= $table->render || '<h3>No data</h3>';
+  $html .= $table->render || '<h3>No data</h3>';
 
   # close toolboxes container div
   $html .= '</div>';

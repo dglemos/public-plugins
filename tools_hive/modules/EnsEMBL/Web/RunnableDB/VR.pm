@@ -50,12 +50,9 @@ sub run {
 
   $options->{$_}  = sprintf '%s/%s', $work_dir, delete $config->{$_} for qw(input_file output_file);
   $options->{$_}  = $config->{$_} eq 'yes' ? 1 : $config->{$_} for grep { defined $config->{$_} && $config->{$_} ne 'no' } keys %$config;
-  $options->{output_file} = $work_dir . '/output_file'; 
+  $options->{output_file} = $work_dir . '/output_file.json'; 
 
-  # NOT SURE IS NECESSARY
-  $options->{"database"} = 1;
   $options->{"db_version"} = 101; # DELETE
-
 
   # Header contains: allele, input and the fields
   my $result_headers = $config->{'result_headers'};
@@ -68,9 +65,6 @@ sub run {
   }
 
   $options->{'fields'} = join(',', @fields);
-
-  # save the result file name for later use
-  $self->param('result_file', $options->{'output_file'});
 
   # set reconnect_when_lost()
   my $reconnect_when_lost_bak = $self->dbc->reconnect_when_lost;
@@ -87,7 +81,7 @@ sub run {
     my @keys = keys %{$result_hash};
     foreach my $allele (@keys) {
       my $allele_result = $result_hash->{$allele};
-      my $print_input = $allele."\t".$allele_result->{'input'};
+      my $print_input = $allele_result->{'input'}."\t".$allele;
 
       if($config->{'hgvsg'} eq 'yes') {
         my $join_result = join(', ', @{$allele_result->{'hgvsg'}});
@@ -111,12 +105,22 @@ sub run {
         $print_input = $print_input."\t".$join_result;
       }
       if($config->{'id'} eq 'yes') {
-        my $join_result = join(', ', @{$allele_result->{'id'}});
-        $print_input = $print_input."\t".$join_result;
+        if($allele_result->{'id'}) {
+         my $join_result = join(', ', @{$allele_result->{'id'}});
+         $print_input = $print_input."\t".$join_result;
+        }
+        else {
+          $print_input = $print_input."\t-";
+        }
       }
       if($config->{'vcf_string'} eq 'yes') {
-        my $join_result = join(', ', @{$allele_result->{'vcf_string'}});
-        $print_input = $print_input."\t".$join_result;
+        if($allele_result->{'vcf_string'}) {
+         my $join_result = join(', ', @{$allele_result->{'vcf_string'}});
+         $print_input = $print_input."\t".$join_result;
+        }
+        else {
+          $print_input = $print_input."\t-";
+        }
       }
       push @print_output, $print_input;
     }
@@ -125,6 +129,10 @@ sub run {
   my $fh = FileHandle->new("$work_dir/output_test", 'w');
   print $fh join("\n", @print_output);
   $fh->close();
+
+  my $json = JSON->new;
+  $json->pretty;
+  file_append_contents($options->{output_file}, $json->encode($results));
 
   # restore reconnect_when_lost()
   $self->dbc->reconnect_when_lost($reconnect_when_lost_bak);
