@@ -148,6 +148,19 @@ sub get_items_in_list {
       push(@items_with_url, $item_url);
     }
   }
+  elsif ($type eq 'hgvsc') {
+    foreach my $item (@items_list) {
+      my $item_url = $item;
+      if($item =~ /^ENST/) {
+        my $transcript_id = $item =~ /ENST.*\:/;
+        $item =~ s/ENST.*\://;
+        # $item_url = $hub->get_ExtURL_link($item, 'DBSNP', $item);
+        $item_url = qq{<a href="http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=$transcript_id" class="constant">$transcript_id</a>};
+        $item_url .= $item;
+      }
+      push(@items_with_url, $item_url);
+    }
+  }
 
   if (scalar @items_list > $min_items_count) {
     my $div_id = 'row_'.$row_id.'_'.$type;
