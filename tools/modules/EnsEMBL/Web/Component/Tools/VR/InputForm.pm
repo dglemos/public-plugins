@@ -22,8 +22,6 @@ package EnsEMBL::Web::Component::Tools::VR::InputForm;
 use strict;
 use warnings;
 
-use List::Util qw(first);
-
 use EnsEMBL::Web::VRConstants qw(INPUT_FORMATS);
 
 use parent qw(
@@ -70,8 +68,6 @@ sub get_cacheable_form_node {
           '_stt', '_sttmulti',
           $_->{'variation'}             ? '_stt__var'   : '_stt__novar',
           $_->{'refseq'}                ? '_stt__rfq'   : (),
-          # $_->{'variation'}{'POLYPHEN'} ? '_stt__pphn'  : (),
-          # $_->{'variation'}{'SIFT'}     ? '_stt__sift'  : ()
         ]
       }, @$species ]
     }, {
@@ -222,9 +218,6 @@ sub js_params {
   my $species = $object->species_list;
   my $params  = $self->SUPER::js_params(@_);
 
-  # consequences data to be used for VEP preview
-  # $params->{'consequences_data'} = $object->get_consequences_data;
-
   # example data for each species
   $params->{'example_data'} = { map { $_->{'value'} => delete $_->{'example'} } @$species };
 
@@ -307,7 +300,6 @@ sub _end_section {
 
   push @$fieldsets, $fieldset;
 
-  # $self->_add_plugins($fieldset, $section) if @{$self->_get_plugins_by_section($section)};
   $self->{_done_sections}->{$section} = 1;
 }
 

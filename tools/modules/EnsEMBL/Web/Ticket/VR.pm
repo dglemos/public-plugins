@@ -59,6 +59,8 @@ sub init_from_user_input {
     }
   }
 
+  throw exception('InputError', 'No output data selected') unless scalar(@result_headers) > 2;
+
   # check required
   if(my $required_string = $job_data->{required_params}) {
     my $fd = $self->object->get_form_details();
