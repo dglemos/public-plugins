@@ -79,7 +79,7 @@ sub content {
         if ($header eq 'id') {
           $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
         }
-        elsif ($header eq 'hgvsc') {
+        elsif ($header eq 'hgvsc' || $header eq 'hgvsp') {
           $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
         }
       }
@@ -151,6 +151,29 @@ sub linkify {
     my $url = $hub->url({
       type    => 'Transcript',
       action  => 'Summary',
+      t       => $split_value[0],
+      species => $species,
+      db      => $db_type,
+    });
+
+    my $zmenu_url = $hub->url({
+      type    => 'ZMenu',
+      action  => 'Transcript',
+      t       => $split_value[0],
+      species => $species,
+      db      => $db_type,
+    });
+
+    $new_value = $self->zmenu_link($url, $zmenu_url, $split_value[0]);
+    $new_value .= ":".$split_value[1];
+  }
+  elsif($field eq 'hgvsp' && $value =~ /^ENS/) {
+
+    my @split_value = split(':', $value);
+
+    my $url = $hub->url({
+      type    => 'Transcript',
+      action  => 'ProteinSummary',
       t       => $split_value[0],
       species => $species,
       db      => $db_type,
