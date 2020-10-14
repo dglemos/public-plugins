@@ -50,7 +50,6 @@ sub content {
   my $output_file  = 'output_test';
   my $output_file_json = 'output_file.json';
 
-  my @rows;
   my $result_headers = $job_config->{'result_headers'};
   my @headers = @$result_headers;
 
@@ -142,7 +141,7 @@ sub linkify {
   return '-' unless defined $value && $value ne '';
 
   # transcript
-  elsif($field eq 'hgvsc' && $value =~ /^ENS.{0,3}T\d+[\.\d+]*$/) {
+  if($field eq 'hgvsc' && $value =~ /^ENS.{0,3}T\d+[\.\d+]*$/) {
 
     my $url = $hub->url({
       type    => 'Transcript',
