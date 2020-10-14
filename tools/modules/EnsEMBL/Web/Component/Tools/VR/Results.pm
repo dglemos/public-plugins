@@ -79,7 +79,7 @@ sub content {
         if ($header eq 'id') {
           $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
         }
-        elsif ($header eq 'hgvsc' || $header eq 'hgvsp') {
+        elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi') {
           $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
         }
       }
