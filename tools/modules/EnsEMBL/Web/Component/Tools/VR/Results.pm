@@ -76,10 +76,15 @@ sub content {
   my $row_id = 0;
   foreach my $row (@rows) {
     foreach my $header (@headers) {
+      $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
+
       if ($row->{$header} && $row->{$header} ne '' && $row->{$header} ne '-') {
         if ($header eq 'id') {
           $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
         }
+        # elsif ($header eq 'hgvsc') {
+        #   $row->{$header} = $self->get_items_in_list($row_id, 'hgvsc', 'HGVS transcript', $row->{$header}, $species);
+        # }
       }
       $row_id++;
     }
@@ -115,6 +120,57 @@ sub content {
   return $html;
 }
 
+sub linkify {
+  my $self = shift;
+  my $field = shift;
+  my $value = shift;
+  my $species = shift;
+  my $job_data = shift;
+
+  # work out core DB type
+  my $db_type = 'core';
+  if(my $ct = $job_data->{core_type}) {
+    if($ct eq 'refseq' || ($value && $ct eq 'merged' && $value !~ /^ENS/)) {
+      $db_type = 'otherfeatures';
+    }
+  }
+
+  my $new_value;
+  my $hub = $self->hub;
+  my $sd = $hub->species_defs;
+
+  return '-' unless defined $value && $value ne '';
+
+  # transcript
+  elsif($field eq 'hgvsc' && $value =~ /^ENS.{0,3}T\d+[\.\d+]*$/) {
+
+    my $url = $hub->url({
+      type    => 'Transcript',
+      action  => 'Summary',
+      t       => $value,
+      species => $species,
+      db      => $db_type,
+    });
+
+    my $zmenu_url = $hub->url({
+      type    => 'ZMenu',
+      action  => 'Transcript',
+      t       => $value,
+      species => $species,
+      db      => $db_type,
+    });
+
+    $new_value = $self->zmenu_link($url, $zmenu_url, $value);
+  }
+
+  else {
+    $new_value = defined($value) && $value ne '' ? $value : '-';
+  }
+
+  return $new_value;
+}
+
+
 # Get a list of comma separated items and transforms it into a bullet point list
 sub get_items_in_list {
   my $self    = shift;
@@ -132,7 +188,6 @@ sub get_items_in_list {
   my @items_list = split(', ',$data);
   my @items_with_url;
 
-  # Prettify format for phenotype entries
   if ($type eq 'id') {
     foreach my $item (@items_list) {
       my $item_url = $item;
@@ -148,19 +203,18 @@ sub get_items_in_list {
       push(@items_with_url, $item_url);
     }
   }
-  elsif ($type eq 'hgvsc') {
-    foreach my $item (@items_list) {
-      my $item_url = $item;
-      if($item =~ /^ENST/) {
-        my $transcript_id = $item =~ /ENST.*\:/;
-        $item =~ s/ENST.*\://;
-        # $item_url = $hub->get_ExtURL_link($item, 'DBSNP', $item);
-        $item_url = qq{<a href="http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=$transcript_id" class="constant">$transcript_id</a>};
-        $item_url .= $item;
-      }
-      push(@items_with_url, $item_url);
-    }
-  }
+  # elsif ($type eq 'hgvsc') {
+  #   foreach my $item (@items_list) {
+  #     my $item_url = $item;
+  #     if($item =~ /^ENST/) {
+  #       my @hgvsc = split(':', $item);
+  #       my $transcript_id = $hgvsc[0];
+  #       $item_url = qq{<a href="http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=$transcript_id" class="constant">$transcript_id</a>};
+  #       $item_url .= $hgvsc[1];
+  #     }
+  #     push(@items_with_url, $item_url);
+  #   }
+  # }
 
   if (scalar @items_list > $min_items_count) {
     my $div_id = 'row_'.$row_id.'_'.$type;
