@@ -144,13 +144,14 @@ sub linkify {
   return '-' unless defined $value && $value ne '';
 
   # transcript
-  if($field eq 'hgvsc' && $value =~ /^ENS/) {
+  if(($field eq 'hgvsc' || $field eq 'hgvsp') && $value =~ /^ENS/) {
+    my $action = $field eq 'hgvsc' ? 'Summary' : 'ProteinSummary';
 
     my @split_value = split(':', $value);
 
     my $url = $hub->url({
       type    => 'Transcript',
-      action  => 'Summary',
+      action  => $action,
       t       => $split_value[0],
       species => $species,
       db      => $db_type,
@@ -167,30 +168,22 @@ sub linkify {
     $new_value = $self->zmenu_link($url, $zmenu_url, $split_value[0]);
     $new_value .= ":".$split_value[1];
   }
-  elsif($field eq 'hgvsp' && $value =~ /^ENS/) {
-
-    my @split_value = split(':', $value);
+  elsif($field eq 'spdi') {
+    my ($chr, $start, $ref, $alt) = split /\:/, $value;
+    my $end = $start + length($ref) - 1;
+    $start -= 3;
+    $end += 3;
 
     my $url = $hub->url({
-      type    => 'Transcript',
-      action  => 'ProteinSummary',
-      t       => $split_value[0],
-      species => $species,
-      db      => $db_type,
+      type             => 'Location',
+      action           => 'View',
+      r                => "$chr:$start-$end",
+      contigviewbottom => "variation_feature_variation=normal",
+      species          => $species
     });
 
-    my $zmenu_url = $hub->url({
-      type    => 'ZMenu',
-      action  => 'Transcript',
-      t       => $split_value[0],
-      species => $species,
-      db      => $db_type,
-    });
-
-    $new_value = $self->zmenu_link($url, $zmenu_url, $split_value[0]);
-    $new_value .= ":".$split_value[1];
+    $new_value = sprintf('<a class="_ht" title="View in location tab" href="%s">%s</a>', $url, $value);
   }
-
   else {
     $new_value = defined($value) && $value ne '' ? $value : '-';
   }
