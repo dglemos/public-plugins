@@ -35,46 +35,6 @@ sub INPUT_FORMATS {
   ];
 }
 
-# sub CONFIG_SECTIONS {
-#   return [
-#   {
-#     'id'            => 'identifiers',
-#     'title'         => 'Identifiers',
-#     'caption'       => 'Additional identifiers for genes, transcripts and variants'
-#   }, 
-#   # {
-#   #   'id'            => 'variants_frequency_data',
-#   #   'title'         => 'Variants and frequency data',
-#   #   'caption'       => 'Co-located variants and frequency data',
-#   #   'check_has_var' => 1
-#   # }, 
-#   {
-#     'id'            => 'additional_annotations',
-#     'title'         => 'Additional annotations',
-#     'caption'       => 'Addtional transcript, protein and regulatory annotations'
-#   }, 
-#   # {
-#   #   'id'            => 'predictions',
-#   #   'title'         => 'Predictions',
-#   #   'caption'       => 'Variant predictions, e.g. SIFT, PolyPhen'
-#   # }, 
-#   # {
-#   #   'id'            => 'filters',
-#   #   'title'         => 'Filtering options',
-#   #   'caption'       => 'Pre-filter results by frequency or consequence type'
-#   # }, 
-#   # {
-#   #   'id'            => 'advanced',
-#   #   'title'         => 'Advanced options',
-#   #   'caption'       => 'Settings to optimise VEP'
-#   # # }, {
-#   # #  'id'        => 'plugins',
-#   # #  'title'     => 'Plugins',
-#   # #  'caption'   => 'Extra functionality from VEP plugins'
-#   # }
-#   ];
-# }
-
 sub REST_DISPATCHER_SERVER_ENDPOINT {
   return 'http://rest.ensembl.org/variant_recoder/:species/';
 }

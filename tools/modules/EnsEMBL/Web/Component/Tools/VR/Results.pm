@@ -79,7 +79,7 @@ sub content {
         if ($header eq 'id') {
           $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
         }
-        elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi') {
+        elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi' || $header eq 'hgvsg')) {
           $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
         }
       }
@@ -170,7 +170,29 @@ sub linkify {
   }
   elsif($field eq 'spdi') {
     my ($chr, $start, $ref, $alt) = split /\:/, $value;
+    $start += 1;
     my $end = $start + length($ref) - 1;
+    $start -= 3;
+    $end += 3;
+
+    my $url = $hub->url({
+      type             => 'Location',
+      action           => 'View',
+      r                => "$chr:$start-$end",
+      contigviewbottom => "variation_feature_variation=normal",
+      species          => $species
+    });
+
+    $new_value = sprintf('<a class="_ht" title="View in location tab" href="%s">%s</a>', $url, $value);
+  }
+  elsif($field eq 'hgvsg') {
+    my ($chr, $desc) = split /\:/, $value;
+
+    my @coords = $desc =~ /([0-9]+)/g;
+    my $pos1 = $coords[0];
+    my $pos2 = defined($coords[1]) ? $coords[1] : $pos1;
+    my $start = $pos1 <= $pos2 ? $pos1 : $pos2;
+    my $end = $pos1 <= $pos2 ? $pos2 : $pos1;
     $start -= 3;
     $end += 3;
 

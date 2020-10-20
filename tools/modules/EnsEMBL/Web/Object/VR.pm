@@ -111,7 +111,7 @@ sub get_form_details {
         'label' => 'Input data type',
         'helptip' => "",
         'values' => [
-          { 'value' => 'id', 'caption' => 'Variant identifier (Examples: )' },
+          { 'value' => 'id', 'caption' => 'Variant identifier' },
           { 'value' => 'spdi', 'caption' => 'Genomic SPDI' },
           { 'value' => 'hgvsg', 'caption' => 'HGVS Genomic' },
           { 'value' => 'hgvsp', 'caption' => 'HGVS Transcript' },
