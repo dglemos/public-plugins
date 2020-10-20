@@ -88,18 +88,18 @@ sub get_cacheable_form_node {
       'type'          => 'radiolist',
       'name'          => 'variant_option',
       'label'         => $fd->{variant_option}->{label},
-      # 'helptip'       => $fd->{id}->{helptip},
+      'helptip'       => $fd->{variant_option}->{helptip},
       'value'         => 'region',
       'class'         => '_stt',
       'values'        => $fd->{variant_option}->{values}
   });
 
   $input_fieldset->add_field({
-      'type'          => 'radiolist',
+      'type'          => 'dropdown',
       'name'          => 'input_type',
       'label'         => $fd->{input_type}->{label},
-      # 'helptip'       => $fd->{id}->{helptip},
-      'value'         => 'region',
+      'helptip'       => $fd->{input_type}->{helptip},
+      'value'         => 'id',
       'class'         => '_stt',
       'values'        => $fd->{input_type}->{values}
   });
@@ -220,9 +220,6 @@ sub js_params {
 
   # example data for each species
   $params->{'example_data'} = { map { $_->{'value'} => delete $_->{'example'} } @$species };
-
-  # REST server address for VEP preview
-  $params->{'rest_server_url'} = $hub->species_defs->ENSEMBL_REST_URL;
 
   return $params;
 }

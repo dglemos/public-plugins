@@ -109,15 +109,17 @@ sub get_form_details {
     $self->{_form_details} = {
       input_type => {
         'label' => 'Input data type',
+        'helptip' => "",
         'values' => [
           { 'value' => 'id', 'caption' => 'Variant identifier (Examples: )' },
           { 'value' => 'spdi', 'caption' => 'Genomic SPDI' },
           { 'value' => 'hgvsg', 'caption' => 'HGVS Genomic' },
-          { 'value' => 'hgvsp', 'caption' => 'HGVS Coding' },
+          { 'value' => 'hgvsp', 'caption' => 'HGVS Transcript' },
           { 'value' => 'hgvsc', 'caption' => 'HGVS Protein' },
         ]},
       variant_option => {
         'label' => 'Variant option',
+        'helptip' => "",
         'values' => [
           { 'value' => 'single', 'caption' => 'Query a single variant' },
           { 'value' => 'multi', 'caption' => 'Query multiple variants' },
