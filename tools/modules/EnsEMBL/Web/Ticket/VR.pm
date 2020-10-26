@@ -23,11 +23,15 @@ use strict;
 use warnings;
 
 use List::Util qw(first);
+use Bio::EnsEMBL::Variation::Utils::VEP qw(detect_format);
 
 use EnsEMBL::Web::Exceptions;
 use EnsEMBL::Web::Job::VR;
 
 use parent qw(EnsEMBL::Web::Ticket);
+
+use constant VEP_FORMAT_DOC => '/info/docs/tools/vep/vep_formats.html';
+# use constant VR_FORMAT_DOC => 'info/docs/tools/vep/recoder/index.html#vr_usage';
 
 sub init_from_user_input {
   ## Abstract method implementation
@@ -47,6 +51,20 @@ sub init_from_user_input {
 
   # if no data found in file/url
   throw exception('InputError', 'No input data is present') unless $file_content;
+
+  # detect file format
+  my $detected_format;
+  try {
+    first { m/^[^\#]/ && ($detected_format = detect_format($_)) } split /\R/, $file_content;
+  } catch {
+    throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VEP_FORMAT_DOC), {'message_is_html' => 1});
+  };
+
+  #Check the input data type matches the file content
+  my $input_type = $hub->param('input_type');
+  if($detected_format ne $input_type) {
+    throw exception('InputError', "Input data type $input_type does not match input data $detected_format");
+  }
 
   my @result_headers = qw/input allele/;
 
