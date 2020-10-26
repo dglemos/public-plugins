@@ -69,10 +69,14 @@ sub init_from_user_input {
   my $variant_option = $hub->param('variant_option');
 
   my @file_content_list = split /\R/, $file_content;
-  my $input_size = scalar(@file_content_list);
+  my @file_content_list_clean = grep !/^#/, @file_content_list;
+  my $input_size = scalar(@file_content_list_clean);
 
-  if($variant_option) {
-    throw exception('InputError', "No variant option selected $input_size");
+  if(!$variant_option) {
+    throw exception('InputError', "No variant option selected");
+  }
+  if($variant_option && $variant_option eq 'single' && $input_size != 1) {
+    throw exception('InputError', "Variant option does not match number of input variants");
   }
 
   my @result_headers = qw/input allele/;
