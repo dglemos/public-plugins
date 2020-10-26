@@ -26,24 +26,4 @@ use warnings;
 
 use parent qw(EnsEMBL::Web::Component::Tools);
 
-# sub job_statistics {
-#   ## Gets the job result stats for display on results pages
-#   my $self    = shift;
-#   my $file    = $self->object->result_files->{'stats_file'};
-#   my $stats   = {};
-#   my $section;
-# 
-#   for (split /\n/, $file->content) {
-#     if (m/^\[(.+?)\]$/) {
-#       $section = $1;
-#     } elsif (m/\w+/) {
-#       my ($key, $value) = split "\t";
-#       $stats->{$section}->{$key} = $value;
-#       push @{$stats->{'sort'}->{$section}}, $key;
-#     }
-#   }
-# 
-#   return $stats;
-# }
-
 1;
