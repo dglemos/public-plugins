@@ -71,6 +71,10 @@ sub content {
     push @rows, \%row_data;
   }
 
+  my $line_count = scalar(@rows);
+  my $from = 1;
+  my $actual_to = $from - 1 + ($line_count || 0);
+
   # linkify row content
   my $row_id = 0;
   foreach my $row (@rows) {
@@ -113,6 +117,8 @@ sub content {
 
   # close toolboxes container div
   $html .= '</div>';
+
+  my $nav_html = $self->_navigation($actual_to, $line_count);
 
   return $html;
 }
@@ -239,7 +245,11 @@ sub get_items_in_list {
     foreach my $item (@items_list) {
       my $item_url = $item;
       if($item =~ /^rs/) {
-        $item_url = $hub->get_ExtURL_link($item, 'DBSNP', $item);
+        my $url = $hub->url({
+          type   => 'Variation',
+          action => 'Explore',
+          v      => $item });
+        $item_url = qq{<a href="$url">$item</a>};
       }
       if($item =~ /^COS/) {
         $item_url = $hub->get_ExtURL_link($item, 'COSMIC', $item);
@@ -258,6 +268,150 @@ sub get_items_in_list {
   else {
     return join('<br />',@items_with_url);
   }
+}
+
+## NAVIGATION
+#############
+
+sub _navigation {
+  my $self = shift;
+  my $actual_to = shift;
+  my $output_lines = shift;
+
+  my $object = $self->object;
+  my $hub = $self->hub;
+
+  # get params
+  my %params = map { $_ eq 'update_panel' ? () : ($_ => $hub->param($_)) } $hub->param;
+  my $size  = $params{'size'} || 5;
+  my $from  = $params{'from'} || 1;
+  my $to    = $params{'to'};
+
+  my $orig_size = $size;
+
+  if (defined $to) {
+    $size = $to - $from + 1;
+  } else {
+    $to = $from + $size - 1;
+  }
+
+  $actual_to ||= 0;
+
+  my $this_page   = (($from - 1) / $orig_size) + 1;
+  my $page_count  = ceil($output_lines / $orig_size);
+  my $showing_all = ($to - $from) == ($output_lines - 1) ? 1 : 0;
+
+  my $html = '';
+
+  # navigation
+  unless($showing_all) {
+    my $style           = 'style="vertical-align:top; height:16px; width:16px"';
+    my $disabled_style  = 'style="vertical-align:top; height:16px; width:16px; opacity: 0.5;"';
+
+    $html .= '<b>Page: </b>';
+
+    # first
+    if ($from > 1) {
+      $html .= $self->reload_link(qq(<img src="/i/nav-l2.gif" $style title="First page"/>), {
+        'from' => 1,
+        'to'   => $orig_size,
+        'size' => $orig_size,
+      });
+    } else {
+      $html .= '<img src="/i/nav-l2.gif" '.$disabled_style.'/>';
+    }
+
+    # prev page
+    if ($from > 1) {
+      $html .= $self->reload_link(sprintf('<img src="/i/nav-l1.gif" %s title="Previous page"/></a>', $style), {
+        'from' => $from - $orig_size,
+        'to'   => $to - $orig_size,
+        'size' => $orig_size,
+      });
+    } else {
+      $html .= '<img src="/i/nav-l1.gif" '.$disabled_style.'/>';
+    }
+
+    # page indicator and count
+    $html .= sprintf(
+      " %i of %s ",
+      $this_page,
+      (
+        $from == 1 && !($to <= $actual_to && $to < $output_lines) ?
+        1 : $page_count
+      )
+    );
+
+    # next page
+    if ($to <= $actual_to && $to < $output_lines) {
+      $html .= $self->reload_link(sprintf('<img src="/i/nav-r1.gif" %s title="Next page"/></a>', $style), {
+        'from' => $from + $orig_size,
+        'to'   => $to + $orig_size,
+        'size' => $orig_size,
+      });
+    } else {
+      $html .= '<img src="/i/nav-r1.gif" '.$disabled_style.'/>';
+    }
+
+    # last
+    if ($to < $output_lines) {
+      $html .= $self->reload_link(qq(<img src="/i/nav-r2.gif" $style title="Last page"/></a>), {
+        'from' => ($size * int($output_lines / $size)) + 1,
+        'to'   => $output_lines,
+        'size' => $orig_size,
+      });
+    } else {
+      $html .= '<img src="/i/nav-r2.gif" '.$disabled_style.'/>';
+    }
+
+    $html .= '<span style="padding: 0px 10px 0px 10px; color: grey">|</span>';
+  }
+
+  # number of entries
+  $html .= '<b>Show: </b> ';
+
+  foreach my $opt_size (qw(1 5 10 50)) {
+    next if $opt_size > $output_lines;
+
+    if($orig_size eq $opt_size) {
+      $html .= sprintf(' <span class="count-highlight">&nbsp;%s&nbsp;</span>', $opt_size);
+    }
+    else {
+      $html .= ' '. $self->reload_link($opt_size, {
+        'from' => $from,
+        'to'   => $to + ($opt_size - $size),
+        'size' => $opt_size,
+      });
+    }
+  }
+
+  # showing all?
+  if ($showing_all) {
+    $html .= ' <span class="count-highlight">&nbsp;All&nbsp;</span>';
+  } else {
+    my $warning = '';
+    if($output_lines > 500) {
+      $warning  = '<img class="_ht" src="/i/16/alert.png" style="vertical-align: top;" title="<span style=\'color: yellow; font-weight: bold;\'>WARNING</span>: table with all data may not load in your browser - use Download links instead">';
+    }
+
+    $html .=  ' ' . $self->reload_link("All$warning", {
+      'from' => 1,
+      'to'   => $output_lines,
+      'size' => $output_lines,
+   });
+  }
+
+  $html .= ' variants';
+}
+
+sub reload_link {
+  my ($self, $html, $url_params) = @_;
+
+  return sprintf('<a href="%s" class="_reload"><input type="hidden" value="%s" />%s</a>',
+    $self->hub->url({%$url_params, 'update_panel' => undef}, undef, 1),
+    $self->ajax_url(undef, {%$url_params, 'update_panel' => 1}, undef, 1),
+    $html
+  );
 }
 
 sub zmenu_link {
