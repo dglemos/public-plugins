@@ -24,6 +24,8 @@ use warnings;
 
 use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
 use EnsEMBL::Web::Component::Tools::NewJobButton;
+use POSIX qw(ceil);
+use EnsEMBL::Web::Utils::FormatText qw(helptip);
 
 use parent qw(EnsEMBL::Web::Component::Tools::VR);
 
@@ -119,6 +121,15 @@ sub content {
   $html .= '</div>';
 
   my $nav_html = $self->_navigation($actual_to, $line_count);
+
+  # navigation HTML we frame here as we want to reuse it unframed after the results table
+  $html .= '<div class="toolbox right-margin">';
+  $html .= '<div class="toolbox-head">';
+  $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
+  $html .= helptip('Navigation', "Navigate through the results of your Variant Recoder job. By default the results for 5 variants are displayed.");
+  $html .= '</div>';
+  $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
+  $html .= '</div>';
 
   return $html;
 }
