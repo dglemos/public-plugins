@@ -65,9 +65,6 @@ sub content {
     $html .= qq{<p><div class="component-tools tool_buttons"><a class="export" href="$down_url">Download all results</a><div class="left-margin">$new_job_button</div></div></p>};
   }
 
-  # close toolboxes container div
-  $html .= '</div>';
-
   my @rows = ();
   foreach my $line (@content) {
     chomp $line;
@@ -117,20 +114,20 @@ sub content {
     'sort' => 'string',
   }} @headers;
 
-  my $table = $self->new_table(\@table_headers, \@rows, { data_table => 1, sorting => [ 'input asc' ], exportable => 0, data_table_config => {bLengthChange => 'false', bFilter => 'false'}, });
+  my $table = $self->new_table(\@table_headers, \@rows, { data_table => 1, exportable => 0, data_table_config => {bLengthChange => 'false', bFilter => 'false'}, });
   $html .= $table->render || '<h3>No data</h3>';
 
   $html .= '</div>';
 
   my $nav_html = $self->_navigation($actual_to, $line_count);
   # navigation HTML we frame here as we want to reuse it unframed after the results table
-  $html .= '<div class="toolbox right-margin">';
-  $html .= '<div class="toolbox-head">';
-  $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
-  $html .= helptip('Navigation', "Navigate through the results of your Variant Recoder job. By default the results for 5 variants are displayed.");
-  $html .= '</div>';
-  $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
-  $html .= '</div>';
+  # $html .= '<div class="toolbox right-margin">';
+  # $html .= '<div class="toolbox-head">';
+  # $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
+  # $html .= helptip('Navigation', "Navigate through the results of your Variant Recoder job. By default the results for 5 variants are displayed.");
+  # $html .= '</div>';
+  # $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
+  # $html .= '</div>';
 
   return $html;
 }
