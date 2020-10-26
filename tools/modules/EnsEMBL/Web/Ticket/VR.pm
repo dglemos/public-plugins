@@ -66,6 +66,15 @@ sub init_from_user_input {
     throw exception('InputError', "Input data type $input_type does not match input data $detected_format");
   }
 
+  my $variant_option = $hub->param('variant_option');
+
+  my @file_content_list = split /\R/, $file_content;
+  my $input_size = scalar(@file_content_list);
+
+  if($variant_option) {
+    throw exception('InputError', "No variant option selected $input_size");
+  }
+
   my @result_headers = qw/input allele/;
 
   my $job_data = { map { my @val = $hub->param($_); $_ => @val > 1 ? \@val : $val[0] } grep { $_ !~ /^text/ && $_ ne 'file' } $hub->param };

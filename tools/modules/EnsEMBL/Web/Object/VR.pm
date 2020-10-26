@@ -113,10 +113,7 @@ sub get_form_details {
         'values' => [
           { 'value' => 'id', 'caption' => 'Variant identifier' },
           { 'value' => 'spdi', 'caption' => 'Genomic SPDI' },
-          { 'value' => 'hgvs', 'caption' => 'HGVS' },
-          # { 'value' => 'hgvsg', 'caption' => 'HGVS Genomic' },
-          # { 'value' => 'hgvsp', 'caption' => 'HGVS Transcript' },
-          # { 'value' => 'hgvsc', 'caption' => 'HGVS Protein' },
+          { 'value' => 'hgvs', 'caption' => 'HGVS' }
         ]},
       variant_option => {
         'label' => 'Variant option',
