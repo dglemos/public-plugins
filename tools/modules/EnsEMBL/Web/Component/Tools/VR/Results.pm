@@ -73,38 +73,6 @@ sub content {
     push @rows, \%row_data;
   }
 
-  my $line_count = scalar(@rows);
-  my $from = 1;
-  my $actual_to = $from - 1 + ($line_count || 0);
-
-  my $nav_html = $self->_navigation($actual_to, $line_count);
-  $html .= '<div class="toolbox right-margin">';
-  $html .= '<div class="toolbox-head">';
-  $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
-  $html .= helptip('Navigation', "Navigate through the results of your Variant Recoder job. By default the results for 5 variants are displayed.");
-  $html .= '</div>';
-  $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
-  $html .= '</div>';
-
-  # linkify row content
-  my $row_id = 0;
-  foreach my $row (@rows) {
-    foreach my $header (@headers) {
-      if ($row->{$header} && $row->{$header} ne '' && $row->{$header} ne '-') {
-        if ($header eq 'id') {
-          $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
-        }
-        elsif ($header eq 'vcf_string') {
-          $row->{$header} = $self->get_items_in_list($row_id, 'vcf_string', 'VCF format', $row->{$header}, $species);
-        }
-        elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi' || $header eq 'hgvsg') {
-          $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
-        }
-      }
-      $row_id++;
-    }
-  }
-
   # niceify for table
   my %header_titles = (
     'id'                  => 'Variant identifier',
@@ -125,6 +93,42 @@ sub content {
     'title' => ($header_titles{$_} || $_),
     'sort' => 'string',
   }} @headers;
+
+  my $line_count = scalar(@rows);
+  my $from = 1;
+  my $actual_to = $from - 1 + ($line_count || 0);
+
+  my $nav_html = $self->_navigation($actual_to, $line_count);
+  $html .= '<div class="toolbox right-margin">';
+  $html .= '<div class="toolbox-head">';
+  $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
+  $html .= helptip('Navigation', "Navigate through the results of your Variant Recoder job. By default the results for 5 variants are displayed.");
+  $html .= '</div>';
+  $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
+  $html .= '</div>';
+
+  # these are framed within the subroutine
+  my ($filter_html, $active_filters) = @{$self->_filters($result_headers, \%header_titles)};
+  $html .= $filter_html;
+
+  # linkify row content
+  my $row_id = 0;
+  foreach my $row (@rows) {
+    foreach my $header (@headers) {
+      if ($row->{$header} && $row->{$header} ne '' && $row->{$header} ne '-') {
+        if ($header eq 'id') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
+        }
+        elsif ($header eq 'vcf_string') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'vcf_string', 'VCF format', $row->{$header}, $species);
+        }
+        elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi' || $header eq 'hgvsg') {
+          $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
+        }
+      }
+      $row_id++;
+    }
+  }
 
   my $table = $self->new_table(\@table_headers, \@rows, { data_table => 1, exportable => 0, data_table_config => {bLengthChange => 'false', bFilter => 'false'}, });
   $html .= $table->render || '<h3>No data</h3>';
@@ -318,6 +322,8 @@ sub _navigation {
 
   $actual_to ||= 0;
 
+  print "ACTUAL TO: $actual_to, OUTPUT LINES: $output_lines, FROM: $from, TO: $to, SIZE: $size\n";
+
   my $this_page   = (($from - 1) / $orig_size) + 1;
   my $page_count  = ceil($output_lines / $orig_size);
   my $showing_all = ($to - $from) == ($output_lines - 1) ? 1 : 0;
@@ -423,6 +429,242 @@ sub _navigation {
   }
 
   $html .= ' variants';
+}
+
+## FILTERS
+##########
+
+sub _filters {
+  my $self = shift;
+  my $headers = shift;
+  my $header_titles = shift;
+
+  my $hub = $self->hub;
+  my %params = map { $_ eq 'update_panel' ? () : ($_ => $hub->param($_)) } $hub->param;
+  my $match = $params{'match'}  || 'and';
+  my $html = '';
+
+  $html .= '<div class="toolbox right-margin">';
+  $html .= '<div class="toolbox-head"><img src="/i/16/search.png" style="vertical-align:top;"> ';
+  $html .= helptip('Filters', "Filter your results to find interesting or significant data. You can apply several filters on any category of data in your results using a range of operators, add multiple filters, and edit active filters");
+  $html .= '</div>';
+  $html .= '<div style="padding:0px 5px 0px 5px;">';
+
+  my $form_url = $hub->url();
+  my $ajax_url = $self->ajax_url(undef, {'update_panel' => 1, '__clear' => 1});
+
+  my $ajax_html .= qq(<form action="#" class="_apply_filter" style="margin: 0;"><input type="hidden" name="ajax_url" value="$ajax_url" />);
+
+  # define operators
+  my @operators = (
+    {'name' => 'is',  'title' => 'is'},
+    {'name' => 'ne',  'title' => 'is not'},
+    {'name' => 're',  'title' => 'matches'},
+    {'name' => 'lt',  'title' => '<'},
+    {'name' => 'gt',  'title' => '>'},
+    {'name' => 'lte', 'title' => '<='},
+    {'name' => 'gte', 'title' => '>='},
+    {'name' => 'in',  'title' => 'in file'},
+  );
+  my @non_numerical = @operators[0..2];
+  my %operators = map {$_->{'name'} => $_->{'title'}} @operators;
+
+  # active filters
+  my $active_filters = 0;
+  my $filter_number;
+
+  my @filter_divs;
+  my @location_divs;
+
+  my @user_files =
+    sort { $b->{'timestamp'} <=> $a->{'timestamp'} }
+    grep { $_->{'format'} && lc($_->{'format'}) eq 'gene_list' }
+    $hub->session->get_record_data({'type' => 'upload'}), $hub->user ? $hub->user->get_records_data({'type' => 'uploads'}) : ();
+
+  my %file_display_name = map { $_->{file} => $_->{name} } @user_files;
+
+  $html .= '<div>';
+  foreach my $i (1..$MAX_FILTERS) {
+    if ($params{"field$i"}) {
+      my $tmp_html;
+
+      $active_filters++;
+
+      # filter display
+      $tmp_html .= sprintf('
+        <div class="filter filter_edit_%s">
+          %s %s %s
+          <span style="float:right; vertical-align: top;">
+            <a href="#" class="filter_toggle" rel="filter_edit_%s"><img class="_ht" src="/i/16/pencil-whitebg.png" title="Edit filter"></a>
+            %s
+          </span>
+        </div>',
+        $i,
+        $header_titles->{$params{"field$i"}} || $params{"field$i"},
+        $operators{$params{"operator$i"}},
+        $params{"operator$i"} eq 'in' ? $file_display_name{$params{"value_dd$i"}} : ($params{"value$i"} ne "" ? $params{"value$i"} : 'defined'),
+        $i,
+        $self->reload_link('<img class="_ht" src="/i/close.png" title="Remove filter" style="height:16px; width:16px">', {
+          "field$i"       => undef,
+          "operator$i"    => undef,
+          "value$i"       => undef,
+          "value_dd$i"    => undef,
+          'update_panel'  => undef
+        })
+      );
+
+      # edit filter
+      $tmp_html .= qq(<div class="filter_edit_$i" style="display:none;">);
+      $tmp_html .= $ajax_html;
+
+      # field
+      $tmp_html .= qq('<select class="autocomplete" name="field$i">);
+      $tmp_html .= sprintf(
+        '<option value="%s" %s>%s</option>',
+        $_,
+        $_ eq $params{"field$i"} ? 'selected="selected"' : '',
+        $header_titles->{$_} || $_
+      ) for @$headers;
+      $tmp_html .= '</select>';
+
+      # operator
+      $tmp_html .= qq(<select name="operator$i" class="_operator_dd">);
+      $tmp_html .= sprintf(
+        '<option value="%s" %s>%s</option>',
+        $_->{'name'},
+        ($_->{'name'} eq $params{"operator$i"} ? 'selected="selected"' : ''),
+        $_->{'title'}
+      ) for @operators;
+      $tmp_html .= '</select>';
+
+      # value and submit
+      $tmp_html .= sprintf(
+        qq(<input class="autocomplete _value_switcher %s" type="text" placeholder="defined" name="value$i" value="%s" />),
+        $params{"operator$i"} eq 'in' ? 'hidden' : '',
+        $params{"value$i"}
+      );
+
+      # value (dropdown file selector)
+      $tmp_html .= sprintf(
+        '<span class="_value_switcher %s">',
+        $params{"operator$i"} eq 'in' ? '' : 'hidden'
+      );
+      if(scalar @user_files) {
+        $tmp_html .= '<select name="value_dd'.$i.'">';
+        $tmp_html .= sprintf(
+          '<option value="%s" %s>%s</option>',
+          $_->{file},
+          $_->{file} eq $params{"value_dd$i"} ? 'selected="selected"' : '',
+          $_->{name}
+        ) for @user_files;
+        $tmp_html .= '</select>';
+      }
+      my $url = $hub->url({
+        type   => 'UserData',
+        action => 'SelectFile',
+        # format => 'GENE_LIST'
+      });
+      $tmp_html .= '<span class="small"> <a href="'.$url.'" class="modal_link data" rel="modal_user_data">Upload file</a> </span>';
+      $tmp_html .= '</span>';
+
+      # update/submit
+      $tmp_html .= '<input value="Update" class="fbutton" type="submit" />';
+
+      # add hidden fields
+      $tmp_html .= sprintf('<input type="hidden" name="%s" value="%s">', $_, $params{$_}) for grep {!/[a-z]$i$/i} keys %params;
+      $tmp_html .= '</form>';
+      $tmp_html .= qq(<div style="padding-left: 2px;"><a href="#" class="small filter_toggle" style="color:white;" rel="filter_edit_$i">Cancel</a></div>);
+      $tmp_html .= '</div>';
+
+      if($params{"field$i"} =~ /^Location/) {
+        push @location_divs, $tmp_html;
+      } else {
+        push @filter_divs, $tmp_html;
+      }
+    } else {
+      $filter_number ||= $i;
+    }
+  }
+
+  foreach my $div (@location_divs) {
+    $html .= qq(<div class="location-filter-box filter-box">$div</div>);
+  }
+  # $html .= '<hr style="margin:2px"/>' if scalar @location_divs && scalar @filter_divs;
+
+  foreach my $div (@filter_divs) {
+    $html .= qq(<div class="filter-box">$div</div>);
+  }
+
+  $html .= '</div>';
+
+  if ($active_filters > 1) {
+    my %logic = (
+      'or'  => 'any',
+      'and' => 'all',
+    );
+
+    # clear
+    $html .= '<div style="float:left;">'.$ajax_html;
+    $html .= sprintf('<input type="hidden" name="%s" value="%s">', $_, $params{$_}) for grep {!/(field|operator|value|match)/} keys %params;
+    $html .= '<input value="Clear filters" class="fbutton" type="submit">';
+    $html .= '</form></div>';
+
+    if(scalar @filter_divs > 1) {
+      $html .= '<div style="float:right;">'.$ajax_html;
+      $html .= 'Match <select name="match"">';
+      $html .= sprintf('<option value="%s" %s>%s</option>', $_, ($_ eq $match ? 'selected="selected"' : ''), $logic{$_}) for sort keys %logic;
+      $html .= '</select> of the above rules ';
+      $html .= sprintf('<input type="hidden" name="%s" value="%s">', $_, $params{$_}) for grep {!/match/} keys %params;
+      $html .= '<input value="Update" class="fbutton" type="submit">';
+      $html .= '</form></div>';
+    }
+  }
+
+  # start form
+  #$html .= sprintf('<div style="display:inline-block;"><form action="%s" method="get">', $form_url);
+  $html .= '<div style="clear: left;">';
+
+  # $html .= '<hr style="margin:2px"/>' if $active_filters;
+  $html .= $ajax_html;
+
+  # field
+  $html .= '<select class="autocomplete right-margin" name="field'.$filter_number.'">';
+  $html .= sprintf('<option value="%s">%s</option>', $_, $header_titles->{$_} || $_) for @$headers;
+  $html .= '</select>';
+
+  # operator
+  $html .= '<select class="_operator_dd right-margin" name="operator'.$filter_number.'">';
+  $html .= sprintf('<option value="%s" %s>%s</option>', $_->{name}, ($_->{name} eq 'is' ? 'selected="selected"' : ''), $_->{title}) for @operators;
+  $html .= '</select>';
+
+  # value (text box)
+  $html .= '<input class="autocomplete _value_switcher right-margin" type="text" placeholder="defined" name="value'.$filter_number.'">';
+
+  # value (dropdown file selector)
+  $html .= '<span class="_value_switcher hidden">';
+  if(scalar @user_files) {
+    $html .= '<select name="value_dd'.$filter_number.'">';
+    $html .= sprintf('<option value="%s">%s</option>', $_->{file}, $_->{name}) for @user_files;
+    $html .= '</select>';
+  }
+  my $url = $hub->url({
+    type   => 'UserData',
+    action => 'SelectFile',
+    # format => 'GENE_LIST'
+  });
+  $html .= '<span class="small"> <a href="'.$url.'" class="modal_link data" rel="modal_user_data">Upload file</a> </span>';
+  $html .= '</span>';
+
+  # submit
+  $html .= '<input value="Add" class="fbutton" type="submit">';
+
+  # add hidden fields
+  $html .= sprintf('<input type="hidden" name="%s" value="%s">', $_, $params{$_}) for keys %params;
+  $html .= '</form></div>';
+
+  $html .= '</div></div>';
+
+  return [$html, $active_filters];
 }
 
 sub reload_link {
