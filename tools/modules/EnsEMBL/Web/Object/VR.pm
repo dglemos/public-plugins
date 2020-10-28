@@ -107,35 +107,20 @@ sub get_form_details {
   if(!exists($self->{_form_details})) {
 
     $self->{_form_details} = {
-      input_type => {
-        'label' => 'Input data type',
-        'helptip' => "",
-        'values' => [
-          { 'value' => 'id', 'caption' => 'Variant identifier' },
-          { 'value' => 'spdi', 'caption' => 'Genomic SPDI' },
-          { 'value' => 'hgvs', 'caption' => 'HGVS' }
-        ]},
-      variant_option => {
-        'label' => 'Variant option',
-        'helptip' => "",
-        'values' => [
-          { 'value' => 'single', 'caption' => 'Query a single variant' },
-          { 'value' => 'multi', 'caption' => 'Query multiple variants' },
-        ]},
         id => {
           'label'   => 'Variant identifier',
-          'helptip' => '',
+          'helptip' => 'dbSNP rsIDs or any synonym for a variant present in the Ensembl Variation database',
         },
         spdi => {
-          'label'   => 'Genomic SPDI',
-          'helptip' => '',
+          'label'   => 'SPDI',
+          'helptip' => 'Genomic SPDI notation',
         },
         hgvsg => {
           'label'   => 'HGVS Genomic',
           'helptip' => '',
         },
         hgvsc => {
-          'label'   => 'HGVS Coding',
+          'label'   => 'HGVS Transcript',
           'helptip' => '',
         },
         hgvsp => {

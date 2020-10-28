@@ -85,27 +85,8 @@ sub get_cacheable_form_node {
   });
 
   $input_fieldset->add_field({
-      'type'          => 'radiolist',
-      'name'          => 'variant_option',
-      'label'         => $fd->{variant_option}->{label},
-      'helptip'       => $fd->{variant_option}->{helptip},
-      'value'         => 'region',
-      'class'         => '_stt',
-      'values'        => $fd->{variant_option}->{values}
-  });
-
-  $input_fieldset->add_field({
-      'type'          => 'dropdown',
-      'name'          => 'input_type',
-      'label'         => $fd->{input_type}->{label},
-      'helptip'       => $fd->{input_type}->{helptip},
-      'value'         => 'id',
-      'class'         => '_stt',
-      'values'        => $fd->{input_type}->{values}
-  });
-
-  $input_fieldset->add_field({
     'label'         => 'Input data',
+    'helptip'       => 'Variant ID, HGVS notation or genomic SPDI notation',
     'elements'      => [
       {
         'type'          => 'noedit',
@@ -143,37 +124,37 @@ sub get_cacheable_form_node {
     'values'        => [{
       'name'          => "id",
       'caption'       => $fd->{id}->{label},
-      # 'helptip'       => $fd->{af}->{helptip},
+      'helptip'       => $fd->{id}->{helptip},
       'value'         => 'yes',
       'checked'       => 1
     }, {
       'name'          => "spdi",
       'caption'       => $fd->{spdi}->{label},
-      # 'helptip'       => $fd->{af_1kg}->{helptip},
+      'helptip'       => $fd->{spdi}->{helptip},
       'value'         => 'yes',
       'checked'       => 1
     }, {
       'name'          => "hgvsg",
       'caption'       => $fd->{hgvsg}->{label},
-      # 'helptip'       => $fd->{af_esp}->{helptip},
+      'helptip'       => $fd->{hgvsg}->{helptip},
       'value'         => 'yes',
       'checked'       => 1
     }, {
       'name'          => "hgvsc",
       'caption'       => $fd->{hgvsc}->{label},
-      # 'helptip'       => $fd->{af_gnomad}->{helptip},
+      'helptip'       => $fd->{hgvsc}->{helptip},
       'value'         => 'yes',
       'checked'       => 1
     }, {
       'name'          => "hgvsp",
       'caption'       => $fd->{hgvsp}->{label},
-      # 'helptip'       => $fd->{af_gnomad}->{helptip},
+      'helptip'       => $fd->{hgvsp}->{helptip},
       'value'         => 'yes',
       'checked'       => 1
     }, {
       'name'          => "vcf_string",
       'caption'       => $fd->{vcf_string}->{label},
-      # 'helptip'       => $fd->{af_gnomad}->{helptip},
+      'helptip'       => $fd->{vcf_string}->{helptip},
       'value'         => 'yes',
       'checked'       => 1
     }]

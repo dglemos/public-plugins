@@ -94,6 +94,9 @@ sub content {
         if ($header eq 'id') {
           $row->{$header} = $self->get_items_in_list($row_id, 'id', 'Variant identifier', $row->{$header}, $species);
         }
+        elsif ($header eq 'vcf_string') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'vcf_string', 'VCF format', $row->{$header}, $species);
+        }
         elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi' || $header eq 'hgvsg') {
           $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
         }
@@ -105,9 +108,9 @@ sub content {
   # niceify for table
   my %header_titles = (
     'id'                  => 'Variant identifier',
-    'hgvsg'               => 'HGVS genomic',
-    'hgvsc'               => 'HGVS transcript',
-    'hgvsp'               => 'HGVS protein',
+    'hgvsg'               => 'HGVS Genomic',
+    'hgvsc'               => 'HGVS Transcript',
+    'hgvsp'               => 'HGVS Protein',
     'vcf_format'          => 'VCF format',
     'spdi'                => 'SPDI',
     'allele'              => 'Allele',
@@ -271,6 +274,11 @@ sub get_items_in_list {
         $item_url = $hub->get_ExtURL_link($item, 'HGMD-PUBLIC', $item);
       }
       push(@items_with_url, $item_url);
+    }
+  }
+  elsif ($type eq 'vcf_string') {
+    foreach my $item (@items_list) {
+      push(@items_with_url, $item);
     }
   }
 

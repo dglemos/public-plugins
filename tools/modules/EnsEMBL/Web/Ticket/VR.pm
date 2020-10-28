@@ -60,24 +60,10 @@ sub init_from_user_input {
     throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VEP_FORMAT_DOC), {'message_is_html' => 1});
   };
 
-  #Check the input data type matches the file content
-  my $input_type = $hub->param('input_type');
-  if($detected_format ne $input_type) {
-    throw exception('InputError', "Input data type $input_type does not match input data $detected_format");
-  }
-
-  my $variant_option = $hub->param('variant_option');
-
+  # Checks number of input variants - if 1 send job to REST
   my @file_content_list = split /\R/, $file_content;
   my @file_content_list_clean = grep !/^#/, @file_content_list;
   my $input_size = scalar(@file_content_list_clean);
-
-  if(!$variant_option) {
-    throw exception('InputError', "No variant option selected");
-  }
-  if($variant_option && $variant_option eq 'single' && $input_size != 1) {
-    throw exception('InputError', "Variant option does not match number of input variants");
-  }
 
   my @result_headers = qw/input allele/;
 
@@ -117,6 +103,7 @@ sub init_from_user_input {
   $job_data->{'species'}    = $species;
   $job_data->{'input_file'} = $file_name;
   $job_data->{'result_headers'} = \@result_headers;
+  $job_data->{'input_size'} = $input_size;
 
   $self->add_job(EnsEMBL::Web::Job::VR->new($self, {
     'job_desc'    => $description,

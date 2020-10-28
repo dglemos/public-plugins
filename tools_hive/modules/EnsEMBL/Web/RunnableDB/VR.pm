@@ -72,6 +72,11 @@ sub run {
 
   $self->warning(Dumper $options);
 
+  my $input_size = $config->{'input_size'};
+  if($input_size == 1) {
+  
+  }
+
   # create a Variant Recoder runner and run the job
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);
   my $results = $runner->recode_all;
@@ -88,8 +93,13 @@ sub run {
         $print_input = $print_input."\t".$join_result;
       }
       if($config->{'hgvsc'} eq 'yes') {
-        my $join_result = join(', ', @{$allele_result->{'hgvsc'}});
-        $print_input = $print_input."\t".$join_result;
+        if($allele_result->{'hgvsc'}) {
+          my $join_result = join(', ', @{$allele_result->{'hgvsc'}});
+          $print_input = $print_input."\t".$join_result;
+        }
+        else {
+          $print_input = $print_input."\t-";
+        }
       }
       if($config->{'hgvsp'} eq 'yes') {
         if($allele_result->{'hgvsp'}) {
