@@ -60,12 +60,11 @@ sub content {
   # From output file in tab format
   my @content = file_get_contents(join('/', $job->job_dir, $output_file), sub { s/\R/\r\n/r });
 
-  # Download
   my $html = '';
-  if (scalar @content) {
-    my $down_url  = $object->download_url({output_file => $output_file});
-    $html .= qq{<p><div class="component-tools tool_buttons"><a class="export" href="$down_url">Download all results</a><div class="left-margin">$new_job_button</div></div></p>};
-  }
+  # if (scalar @content) {
+  #   my $down_url  = $object->download_url({output_file => $output_file});
+  #   $html .= qq{<p><div class="component-tools tool_buttons"><a class="export" href="$down_url">Download all results</a><div class="left-margin">$new_job_button</div></div></p>};
+  # }
 
   my @rows = ();
   foreach my $line (@content) {
@@ -108,6 +107,9 @@ sub content {
   $html .= '</div>';
   $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
   $html .= '</div>';
+
+  my $download_html = $self->_download(\%content_args, \%seen_ids, $species);
+  $html .= $download_html;
 
   # linkify row content
   my $row_id = 0;
@@ -427,6 +429,37 @@ sub _navigation {
   }
 
   $html .= ' variants';
+}
+
+## DOWNLOAD
+###########
+
+sub _download {
+  my $self = shift;
+  my $content_args = shift;
+  my $seen_ids = shift;
+  my $species = shift;
+
+  my $object = $self->object;
+  my $hub    = $self->hub;
+  my $sd     = $hub->species_defs;
+
+  my $html = '';
+
+  $html .= '<div class="toolbox">';
+  $html .= '<div class="toolbox-head"><img src="/i/16/download.png" style="vertical-align:top;"> Download</div><div style="padding:5px;">';
+
+  # all
+  $html .= '<div><b>All:</b><span style="float:right; margin-left:10px;">';
+  $html .= sprintf(
+    ' <a class="_ht" title="Download all results in %s format%s" href="%s">%s</a>',
+    $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_ }), $_
+  ) for qw(JSON TXT);
+  $html .= '</span></div>';
+
+  $html .= '</div></div>';
+
+  return $html;
 }
 
 sub reload_link {
