@@ -108,7 +108,7 @@ sub content {
   $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
   $html .= '</div>';
 
-  my $download_html = $self->_download(\%content_args, \%seen_ids, $species);
+  my $download_html = $self->_download($species);
   $html .= $download_html;
 
   # linkify row content
@@ -436,8 +436,6 @@ sub _navigation {
 
 sub _download {
   my $self = shift;
-  my $content_args = shift;
-  my $seen_ids = shift;
   my $species = shift;
 
   my $object = $self->object;
@@ -451,10 +449,15 @@ sub _download {
 
   # all
   $html .= '<div><b>All:</b><span style="float:right; margin-left:10px;">';
-  $html .= sprintf(
+  my $down_url  = sprintf(
     ' <a class="_ht" title="Download all results in %s format%s" href="%s">%s</a>',
     $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_ }), $_
   ) for qw(JSON TXT);
+
+  $html .= $down_url;
+
+  print "URL: $down_url\n";
+
   $html .= '</span></div>';
 
   $html .= '</div></div>';
