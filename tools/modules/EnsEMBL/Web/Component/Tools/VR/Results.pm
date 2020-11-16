@@ -51,8 +51,9 @@ sub content {
   my $new_job_button = EnsEMBL::Web::Component::Tools::NewJobButton->create_button( $button_url );
 
   # THIS OUTPUT IS DEFINED IN THE RUNNABLE
-  my $output_file  = 'output_test';
-  my $output_file_json = 'output_file.json';
+  my $output_file  = 'vr_output';
+  my $output_file_json = 'vr_output.json';
+  my $output_file_vcf = 'vr_output.vcf';
 
   my $result_headers = $job_config->{'result_headers'};
   my @headers = @$result_headers;
@@ -108,7 +109,7 @@ sub content {
   $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
   $html .= '</div>';
 
-  my $download_html = $self->_download($species);
+  my $download_html = $self->_download($output_file, $output_file_json, $output_file_vcf, $species);
   $html .= $download_html;
 
   # linkify row content
@@ -436,6 +437,9 @@ sub _navigation {
 
 sub _download {
   my $self = shift;
+  my $output_file_txt = shift;
+  my $output_file_json = shift;
+  my $output_file_vcf = shift;
   my $species = shift;
 
   my $object = $self->object;
@@ -449,14 +453,10 @@ sub _download {
 
   # all
   $html .= '<div><b>All:</b><span style="float:right; margin-left:10px;">';
-  my $down_url  = sprintf(
+  $html .= sprintf(
     ' <a class="_ht" title="Download all results in %s format%s" href="%s">%s</a>',
-    $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({ 'format' => lc $_ }), $_
-  ) for qw(JSON TXT);
-
-  $html .= $down_url;
-
-  print "URL: $down_url\n";
+    $_, ($_ eq 'TXT' ? ' (best for Excel)' : ''), $object->download_url({output_file => $_ eq 'TXT' ? $output_file_txt : ($_ eq 'JSON' ? $output_file_json : $output_file_vcf)}), $_
+  ) for qw(JSON TXT VCF);
 
   $html .= '</span></div>';
 
