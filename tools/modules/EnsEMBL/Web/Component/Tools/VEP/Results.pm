@@ -195,6 +195,7 @@ sub content {
     'DisGeNET_PMID'       => 'DisGeNET PMID',
     'DisGeNET_SCORE'      => 'DisGeNET SCORE',
     'DisGeNET_disease'    => 'DisGeNET disease',
+    'VAR_SYNONYMS'        => 'Variant synonyms'
   );
   for (grep {/\_/} @$headers) {
     $header_titles{$_} ||= $_ =~ s/\_/ /gr;
@@ -235,6 +236,9 @@ sub content {
         }
         elsif ($header eq 'DisGeNET_disease'){
           $row->{$header} = $self->get_items_in_list($row_id, 'disgenet_disease', 'DisGeNET diseases', $row->{$header}, $species);
+        }
+        elsif ($header eq 'VAR_SYNONYMS'){
+          $row->{$header} = $self->get_items_in_list($row_id, 'variant_synonyms', 'Variant synonyms', $row->{$header}, $species);
         }
         elsif ($header eq 'DOMAINS') {
           $row->{$header} = $self->get_items_in_list($row_id, 'domains', 'Protein domains', $row->{$header}, $species);
@@ -425,6 +429,7 @@ sub prettify_phenotypes {
   }
   return @result;
 }
+
 
 ## NAVIGATION
 #############
@@ -1147,7 +1152,12 @@ sub get_items_in_list {
 
   $min_items_count ||= 5;
 
-  my @items_list = split(', ',$data);
+  my $div = ', ';
+  if($type eq 'variant_synonyms'){
+    $div = '--';
+  }
+
+  my @items_list = split($div,$data);
   my @items_with_url;
 
   # Prettify format for phenotype entries
@@ -1159,6 +1169,20 @@ sub get_items_in_list {
     foreach my $entry (@items_list) {
       $entry =~ s/_/ /g;
       push (@items_with_url, $entry);
+    }
+  }
+  elsif ($type eq 'variant_synonyms') {
+    my %synonyms;
+    foreach my $entry (@items_list) {
+      my @parts = split('::', $entry);
+      $synonyms{$parts[0]} = $parts[2];
+    }
+    foreach my $source (keys %synonyms){
+      my @values = split(',', $synonyms{$source});
+      foreach $value (@values) {
+        $item_url = $hub->get_ExtURL_link($value, uc $source, $value);
+        push(@items_with_url, $item_url);
+      }
     }
   }
   # Add external links
