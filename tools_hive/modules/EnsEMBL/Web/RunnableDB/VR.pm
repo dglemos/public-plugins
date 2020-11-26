@@ -86,12 +86,13 @@ sub run {
 
   my @vcf_result;
   # Write VCF output header
-  push @vcf_result, "##INFO=HGVSg,Description=\"HGVS Genomic\">";
-  push @vcf_result, "##INFO=HGVSc,Description=\"HGVS Transcript\">";
-  push @vcf_result, "##INFO=HGVSp,Description=\"HGVS Protein\">";
-  push @vcf_result, "##INFO=SPDI,Description=\"SPDI\">";
-  push @vcf_result, "##INFO=VARID,Description=\"Variant identifier\">";
-  push @vcf_result, "##INFO=VCF,Description=\"VCF string\">";
+  push @vcf_result, "##fileformat=VCFv4.2";
+  push @vcf_result, "##INFO=<ID=HGVSg,Number=.,Type=String,Description=\"HGVS Genomic\">";
+  push @vcf_result, "##INFO=<ID=HGVSc,Number=.,Type=String,Description=\"HGVS Transcript\">";
+  push @vcf_result, "##INFO=<ID=HGVSp,Number=.,Type=String,Description=\"HGVS Protein\">";
+  push @vcf_result, "##INFO=<ID=SPDI,Number=.,Type=String,Description=\"SPDI\">";
+  push @vcf_result, "##INFO=<ID=VARID,Number=.,Type=String,Description=\"Variant identifier\">";
+  push @vcf_result, "##INFO=<ID=VCF,Number=.,Type=String,Description=\"VCF string\">";
   push @vcf_result, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO";
 
   my @print_output = ();

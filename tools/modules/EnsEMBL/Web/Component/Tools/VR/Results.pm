@@ -329,7 +329,7 @@ sub _navigation {
 
   $actual_to ||= 0;
 
-  print "ACTUAL TO: $actual_to, OUTPUT LINES: $output_lines, FROM: $from, TO: $to, SIZE: $size\n";
+  # print "ACTUAL TO: $actual_to, OUTPUT LINES: $output_lines, FROM: $from, TO: $to, SIZE: $size\n";
 
   my $this_page   = (($from - 1) / $orig_size) + 1;
   my $page_count  = ceil($output_lines / $orig_size);
