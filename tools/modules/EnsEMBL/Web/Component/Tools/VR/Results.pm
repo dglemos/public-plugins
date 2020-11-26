@@ -47,9 +47,6 @@ sub content {
 
   my $ticket_name = $object->parse_url_param->{'ticket_name'};
 
-  my $button_url = $hub->url({'function' => undef, 'expand_form' => 'true'});
-  my $new_job_button = EnsEMBL::Web::Component::Tools::NewJobButton->create_button( $button_url );
-
   # THIS OUTPUT IS DEFINED IN THE RUNNABLE
   my $output_file  = 'vr_output';
   my $output_file_json = 'vr_output.json';
@@ -62,10 +59,6 @@ sub content {
   my @content = file_get_contents(join('/', $job->job_dir, $output_file), sub { s/\R/\r\n/r });
 
   my $html = '';
-  # if (scalar @content) {
-  #   my $down_url  = $object->download_url({output_file => $output_file});
-  #   $html .= qq{<p><div class="component-tools tool_buttons"><a class="export" href="$down_url">Download all results</a><div class="left-margin">$new_job_button</div></div></p>};
-  # }
 
   my @rows = ();
   foreach my $line (@content) {
@@ -100,7 +93,12 @@ sub content {
   my $from = 1;
   my $actual_to = $from - 1 + ($line_count || 0);
 
+  # open toolbox containers div
+  $html .= '<div>';
+
+  # add toolboxes
   my $nav_html = $self->_navigation($actual_to, $line_count);
+
   $html .= '<div class="toolbox right-margin">';
   $html .= '<div class="toolbox-head">';
   $html .= '<img src="/i/16/eye.png" style="vertical-align:top;"> ';
@@ -109,8 +107,17 @@ sub content {
   $html .= '<div style="padding:5px;">'.$nav_html.'</div>';
   $html .= '</div>';
 
+  # download output files
   my $download_html = $self->_download($output_file, $output_file_json, $output_file_vcf, $species);
   $html .= $download_html;
+
+  # new job button
+  my $button_url = $hub->url({'function' => undef, 'expand_form' => 'true'});
+  my $new_job_button = EnsEMBL::Web::Component::Tools::NewJobButton->create_button( $button_url );
+  $html .= '<span class="left-margin">' . $new_job_button . '</span>';
+
+  # close toolboxes container div
+  $html .= '</div>';
 
   # linkify row content
   my $row_id = 0;
@@ -131,10 +138,9 @@ sub content {
     }
   }
 
-  my $table = $self->new_table(\@table_headers, \@rows, { data_table => 1, exportable => 0, data_table_config => {bLengthChange => 'false', bFilter => 'false'}, });
+  # table with results
+  my $table = $self->new_table(\@table_headers, \@rows, { data_table => 1, exportable => 0, data_table_config => {bLengthChange => 'false', bFilter => 'false'}, hidden_columns => []});
   $html .= $table->render || '<h3>No data</h3>';
-
-  $html .= '</div>';
 
   # repeat navigation div under table
   $html .= '<div>'.$nav_html.'</div>';
