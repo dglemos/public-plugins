@@ -1199,7 +1199,9 @@ sub get_items_in_list {
         my $item_url = $hub->get_ExtURL_link($value, $source_id, $new_value);
         push(@items_with_url_source, $item_url);
       }
-      push(@items_with_url, $source.': '.join(', ', @items_with_url_source));
+      $source =~ s/\_/ /g;
+      my $new_source = '<b>'.$source.'</b>';
+      push(@items_with_url, $new_source.'&nbsp;'.join(', ', @items_with_url_source));
     }
   }
   # Add external links
