@@ -158,8 +158,8 @@ sub species_list {
       # example data for each species
       my $sample_data   = $sd->get_config($_, 'SAMPLE_DATA');
       my $example_data  = {};
-      for (grep m/^VEP/, keys %$sample_data) {
-        $example_data->{lc s/^VEP\_//r} = $sample_data->{$_};
+      for (grep m/^VR/, keys %$sample_data) {
+        $example_data->{lc s/^VR\_//r} = $sample_data->{$_};
       }
 
       push @species, {
