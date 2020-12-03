@@ -25,7 +25,6 @@ use warnings;
 use HTML::Entities  qw(encode_entities);
 
 use EnsEMBL::Web::TmpFile::ToolsOutput;
-use EnsEMBL::Web::TmpFile::VcfTabix;
 use EnsEMBL::Web::Utils::FileHandler qw(file_get_contents);
 use Bio::EnsEMBL::Variation::Utils::Constants;
 use Bio::EnsEMBL::Variation::Utils::VariationEffect;
@@ -77,8 +76,7 @@ sub result_files {
     my $job_dir     = $job->job_dir;
 
     $self->{'_results_files'} = {
-      'output_file' => EnsEMBL::Web::TmpFile::VcfTabix->new('filename' => "$job_dir/$job_config->{'output_file'}") ## THIS DOES NOT MAKE SENSE - VCFTABIX?
-      
+      'output_file' => EnsEMBL::Web::TmpFile::ToolsOutput->new('filename' => "$job_dir/$job_config->{'output_file'}") ## THIS DOES NOT MAKE SENSE - VCFTABIX?
     };
   }
 
