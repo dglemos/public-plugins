@@ -22,9 +22,6 @@ package EnsEMBL::Web::Component::Tools::VR::ResultsSummary;
 use strict;
 use warnings;
 
-use HTML::Entities qw(encode_entities);
-use Bio::EnsEMBL::Variation::Utils::Constants qw(%OVERLAP_CONSEQUENCES);
-
 use parent qw(
   EnsEMBL::Web::Component::Tools::VR
   EnsEMBL::Web::Component::Tools::ResultsSummary

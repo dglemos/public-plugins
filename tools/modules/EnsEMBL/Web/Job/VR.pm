@@ -22,8 +22,6 @@ package EnsEMBL::Web::Job::VR;
 use strict;
 use warnings;
 
-use EnsEMBL::Web::VEPConstants qw(REST_DISPATCHER_FILESIZE_LIMIT);
-
 use parent qw(EnsEMBL::Web::Job);
 
 sub prepare_to_dispatch {

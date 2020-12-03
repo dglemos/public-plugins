@@ -32,8 +32,6 @@ use EnsEMBL::Web::Utils::FileHandler qw(file_append_contents);
 use Bio::EnsEMBL::VEP::VariantRecoder;
 use FileHandle;
 
-use Data::Dumper;
-
 sub fetch_input {
   my $self = shift;
 
@@ -72,13 +70,6 @@ sub run {
   # set reconnect_when_lost()
   my $reconnect_when_lost_bak = $self->dbc->reconnect_when_lost;
   $self->dbc->reconnect_when_lost(1);
-
-  $self->warning(Dumper $options);
-
-  my $input_size = $config->{'input_size'};
-  if($input_size == 1) {
-  
-  }
 
   # create a Variant Recoder runner and run the job
   my $runner = Bio::EnsEMBL::VEP::VariantRecoder->new($options);

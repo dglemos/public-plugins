@@ -30,8 +30,7 @@ use EnsEMBL::Web::Job::VR;
 
 use parent qw(EnsEMBL::Web::Ticket);
 
-use constant VEP_FORMAT_DOC => '/info/docs/tools/vep/vep_formats.html';
-# use constant VR_FORMAT_DOC => 'info/docs/tools/vep/recoder/index.html#vr_usage';
+use constant VR_FORMAT_DOC => 'info/docs/tools/vep/recoder/index.html#vr_usage';
 
 sub init_from_user_input {
   ## Abstract method implementation
@@ -57,13 +56,8 @@ sub init_from_user_input {
   try {
     first { m/^[^\#]/ && ($detected_format = detect_format($_)) } split /\R/, $file_content;
   } catch {
-    throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VEP_FORMAT_DOC), {'message_is_html' => 1});
+    throw exception('InputError', sprintf(q(The input format is invalid or not recognised. Please <a href="%s" rel="external">click here</a> to find out about accepted data formats.), VR_FORMAT_DOC), {'message_is_html' => 1});
   };
-
-  # Checks number of input variants - if 1 send job to REST
-  my @file_content_list = split /\R/, $file_content;
-  my @file_content_list_clean = grep !/^#/, @file_content_list;
-  my $input_size = scalar(@file_content_list_clean);
 
   my @result_headers = qw/input allele/;
 
@@ -103,7 +97,6 @@ sub init_from_user_input {
   $job_data->{'species'}    = $species;
   $job_data->{'input_file'} = $file_name;
   $job_data->{'result_headers'} = \@result_headers;
-  $job_data->{'input_size'} = $input_size;
 
   $self->add_job(EnsEMBL::Web::Job::VR->new($self, {
     'job_desc'    => $description,
