@@ -130,9 +130,21 @@ sub content {
         elsif ($header eq 'vcf_string') {
           $row->{$header} = $self->get_items_in_list($row_id, 'vcf_string', 'VCF format', $row->{$header}, $species);
         }
-        elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi' || $header eq 'hgvsg') {
-          $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
+        elsif ($header eq 'hgvsc') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'hgvsc', 'HGVS Transcript', $row->{$header}, $species, $job_data);
         }
+        elsif ($header eq 'hgvsp') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'hgvsp', 'HGVS Protein', $row->{$header}, $species, $job_data);
+        }
+        elsif ($header eq 'spdi') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'spdi', 'SPDI', $row->{$header}, $species, $job_data);
+        }
+        elsif ($header eq 'hgvsg') {
+          $row->{$header} = $self->get_items_in_list($row_id, 'hgvsg', 'HGVS Genomic', $row->{$header}, $species, $job_data);
+        }
+        # elsif ($header eq 'hgvsc' || $header eq 'hgvsp' || $header eq 'spdi' || $header eq 'hgvsg') {
+        #   $row->{$header} = $self->linkify($header, $row->{$header}, $species, $job_data);
+        # }
       }
       $row_id++;
     }
@@ -247,9 +259,9 @@ sub linkify {
 
   }
 
-  return join('<br />', @return_values);
+  # return join('<br />', @return_values);
+  return @return_values;
 }
-
 
 # Get a list of comma separated items and transforms it into a bullet point list
 sub get_items_in_list {
@@ -259,11 +271,11 @@ sub get_items_in_list {
   my $label   = shift;
   my $data    = shift;
   my $species = shift;
-  my $min_items_count = shift;
+  my $job_data = shift;
 
   my $hub = $self->hub;
 
-  $min_items_count ||= 5;
+  my $min_items_count = 5;
 
   my @items_list = split(', ',$data);
   my @items_with_url;
@@ -290,6 +302,12 @@ sub get_items_in_list {
   elsif ($type eq 'vcf_string') {
     foreach my $item (@items_list) {
       push(@items_with_url, $item);
+    }
+  }
+  elsif ($type eq 'hgvsc' || $type eq 'hgvsp' || $type eq 'spdi' || $type eq 'hgvsg' || ) {
+    foreach my $item (@items_list) {
+      @items_list = $self->linkify($type, $data, $species, $job_data);
+      @items_with_url = @items_list;
     }
   }
 
