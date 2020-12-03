@@ -304,10 +304,10 @@ sub get_items_in_list {
       push(@items_with_url, $item);
     }
   }
-  elsif ($type eq 'hgvsc' || $type eq 'hgvsp' || $type eq 'spdi' || $type eq 'hgvsg' || ) {
+  elsif ($type eq 'hgvsc' || $type eq 'hgvsp' || $type eq 'spdi' || $type eq 'hgvsg') {
     foreach my $item (@items_list) {
-      @items_list = $self->linkify($type, $data, $species, $job_data);
-      @items_with_url = @items_list;
+      my @items = $self->linkify($type, $data, $species, $job_data);
+      @items_with_url = @items;
     }
   }
 
