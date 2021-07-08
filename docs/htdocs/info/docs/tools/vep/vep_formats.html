@@ -377,7 +377,6 @@ NC_000016.10:68644746:AA:GTA
         <li><strong>Position in protein</strong> - relative position of amino acid in protein</li>
         <li><strong>Amino acid change</strong> - only given if the variant affects the protein-coding sequence</li>
         <li><strong>Codon change</strong> - the alternative codons with the variant base in upper case</li>
-        <li><strong>Co-located variation</strong> - known identifier of existing variant</li>
         <li><strong>Extra</strong> - this column contains extra information as key=value pairs separated by ";", see below.</li>
     </ol>
 
@@ -388,6 +387,7 @@ NC_000016.10:68644746:AA:GTA
       <ul>
         <li><b>REF_ALLELE</b> - the reference allele</li>
         <li><b>IMPACT</b> - the impact modifier for the consequence type</li>
+        <li><b>Existing_variation</b> - Identifier(s) of co-located known variants</li>
         <li><b>VARIANT_CLASS</b> - Sequence Ontology <a href="/info/genome/variation/prediction/classification.html#classes">variant class</a></li>
         <li><b>SYMBOL</b> - the gene symbol</li>
         <li><b>SYMBOL_SOURCE</b> - the source of the gene symbol</li>
@@ -523,7 +523,6 @@ NC_000016.10:68644746:AA:GTA
 ## Protein_position : Relative position of amino acid in protein
 ## Amino_acids : Reference and variant amino acids
 ## Codons : Reference and variant codon sequence
-## Existing_variation : Identifier(s) of co-located known variants
 ## Extra column keys:
 ## IMPACT : Subjective impact classification of consequence type
 ## DISTANCE : Shortest distance from variant to transcript
@@ -545,11 +544,11 @@ NC_000016.10:68644746:AA:GTA
 
     <p>Example of VEP tab-delimited output format:</p>
     <pre class="code sh_sh">
-#Uploaded_variation  Location   Allele  Gene             Feature          Feature_type  Consequence                            cDNA_position  CDS_position  Protein_position  Amino_acids  Codons   Existing_variation  IMPACT    DISTANCE  STRAND  FLAGS 
-11_224088_C/A        11:224088  A       ENSG00000142082  ENST00000525319  Transcript    missense_variant                       742            716           239               S/I          aGc/aTc  -                   MODERATE  -         -1      - 
-11_224088_C/A        11:224088  A       ENSG00000142082  ENST00000534381  Transcript    downstream_gene_variant                -              -             -                 -            -        -                   MODIFIER  1674      -1      -
-11_224088_C/A        11:224088  A       ENSG00000142082  ENST00000529055  Transcript    downstream_gene_variant                -              -             -                 -            -        -                   MODIFIER  134       -1      -
-11_224585_G/A        11:224585  A       ENSG00000142082  ENST00000529937  Transcript    intron_variant,NMD_transcript_variant  -              -             -                 -            -        -                   MODIFIER  -         -1      -</pre>
+#Uploaded_variation  Location   Allele  Gene             Feature          Feature_type  Consequence                            cDNA_position  CDS_position  Protein_position  Amino_acids  Codons   IMPACT    DISTANCE  STRAND  FLAGS 
+11_224088_C/A        11:224088  A       ENSG00000142082  ENST00000525319  Transcript    missense_variant                       742            716           239               S/I          aGc/aTc  MODERATE  -         -1      - 
+11_224088_C/A        11:224088  A       ENSG00000142082  ENST00000534381  Transcript    downstream_gene_variant                -              -             -                 -            -        MODIFIER  1674      -1      -
+11_224088_C/A        11:224088  A       ENSG00000142082  ENST00000529055  Transcript    downstream_gene_variant                -              -             -                 -            -        MODIFIER  134       -1      -
+11_224585_G/A        11:224585  A       ENSG00000142082  ENST00000529937  Transcript    intron_variant,NMD_transcript_variant  -              -             -                 -            -        MODIFIER  -         -1      -</pre>
     
 
     <p> The choice and order of columns in the output may be configured using <a href="script/vep_options.html#opt_fields">--fields</a>. For instance:<br />
@@ -575,7 +574,7 @@ NC_000016.10:68644746:AA:GTA
 
     <p>
     Here is a list of the (default) fields you can find within the CSQ field:
-    <pre class="code sh_sh">Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID</pre>
+    <pre class="code sh_sh">Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID</pre>
     </p>
     <p>Example of VEP command using the <a href="script/vep_options.html#opt_vcf">--vcf</a> and <a href="script/vep_options.html#opt_fields">--fields</a> options:
     <pre class="code sh_sh">./vep -i examples/homo_sapiens_GRCh38.vcf --cache --force_overwrite <b>--vcf --fields "Allele,Consequence,Feature_type,Feature"</b></pre>

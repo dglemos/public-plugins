@@ -274,7 +274,6 @@ curl -O ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz.tbi</pr
 ## Protein_position : Relative position of amino acid in protein
 ## Amino_acids : Reference and variant amino acids
 ## Codons : Reference and variant codon sequence
-## Existing_variation : Identifier(s) of co-located known variants
 ## Extra column keys:
 ## IMPACT : Subjective impact classification of consequence type
 ## DISTANCE : Shortest distance from variant to transcript
@@ -293,13 +292,13 @@ curl -O ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz.tbi</pr
       <div class="navbar" onclick="show_hide('custom_results_vcf');" id="custom_results_vcf" style="padding-left:5px;margin:2px 0px 0px;cursor:pointer"><img id="img_custom_results_vcf" src="/i/16/plus-button.png" style="vertical-align:middle"/> <span style="position:absolute;left:28px;top:9px">Results in VCF (adding the tag <b>--vcf</b> in the command line)</span></div>
       <div id="div_custom_results_vcf" style="display:none">
         <pre class="code sh_sh">##fileformat=VCFv4.1
-##INFO=&lt;ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|SOURCE|ClinVar|ClinVar_CLNSIG|ClinVar_CLNREVSTAT|ClinVar_CLNDN"&gt;
+##INFO=&lt;ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|SOURCE|ClinVar|ClinVar_CLNSIG|ClinVar_CLNREVSTAT|ClinVar_CLNDN"&gt;
 ##INFO=&lt;ID=ClinVar,Number=.,Type=String,Description="/path/to/custom_files/clinvar.vcf.gz (exact)"&gt;
 ##INFO=&lt;ID=ClinVar_CLNSIG,Number=.,Type=String,Description="CLNSIG field from /path/to/custom_files/clinvar.vcf.gz"&gt;
 ##INFO=&lt;ID=ClinVar_CLNREVSTAT,Number=.,Type=String,Description="CLNREVSTAT field from /path/to/custom_files/clinvar.vcf.gz"&gt;
 ##INFO=&lt;ID=ClinVar_CLNDN,Number=.,Type=String,Description="CLNDN field from /path/to/custom_files/clinvar.vcf.gz"&gt;
 #CHROM  POS        ID               REF  ALT  QUAL  FILTER  INFO
-1       230710048  1_230710048_A/G  A    G    .     .       CSQ=G|missense_variant|MODERATE|AGT|ENSG00000135744|Transcript|ENST00000366667|protein_coding|2/5||||1018|803|268|M/T|aTg/aCg|||-1||HGNC|HGNC:333||18068|Benign|criteria_provided&_multiple_submitters&_no_conflicts|Hypertension&_essential&_susceptibility_to&Preeclampsia&_susceptibility_to&Renal_dysplasia&Susceptibility_to_progression_to_renal_failure_in_IgA_nephropathy&not_specified,G|downstream_gene_variant|MODIFIER|AL512328.1|ENSG00000244137|Transcript|ENST00000412344|antisense|||||||||||650|-1||Clone_based_ensembl_gene|||18068|Benign|criteria_provided&_multiple_submitters&_no_conflicts|Hypertension&_essential&_susceptibility_to&Preeclampsia&_susceptibility_to&Renal_dysplasia&Susceptibility_to_progression_to_renal_failure_in_IgA_nephropathy&amp;not_specified</pre>
+1       230710048  1_230710048_A/G  A    G    .     .       CSQ=G|missense_variant|MODERATE|AGT|ENSG00000135744|Transcript|ENST00000366667|protein_coding|2/5||||1018|803|268|M/T|aTg/aCg||-1||HGNC|HGNC:333||18068|Benign|criteria_provided&_multiple_submitters&_no_conflicts|Hypertension&_essential&_susceptibility_to&Preeclampsia&_susceptibility_to&Renal_dysplasia&Susceptibility_to_progression_to_renal_failure_in_IgA_nephropathy&not_specified,G|downstream_gene_variant|MODIFIER|AL512328.1|ENSG00000244137|Transcript|ENST00000412344|antisense||||||||||650|-1||Clone_based_ensembl_gene|||18068|Benign|criteria_provided&_multiple_submitters&_no_conflicts|Hypertension&_essential&_susceptibility_to&Preeclampsia&_susceptibility_to&Renal_dysplasia&Susceptibility_to_progression_to_renal_failure_in_IgA_nephropathy&amp;not_specified</pre>
     </li>
   </ol>
 

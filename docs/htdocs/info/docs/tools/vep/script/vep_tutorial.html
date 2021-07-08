@@ -148,21 +148,21 @@ with --output_file or overwrite existing file with --force_overwrite</pre>
     <pre class="code sh_sh">head variant_effect_output.txt
 
 ## ENSEMBL VARIANT EFFECT PREDICTOR v[[SPECIESDEFS::ENSEMBL_VERSION]].0
-## Output produced at 2017-03-21 14:51:27
+## Output produced at 2021-07-08 14:51:27
 ## Connected to homo_sapiens_core_[[SPECIESDEFS::ENSEMBL_VERSION]]_38 on ensembldb.ensembl.org
 ## Using cache in /homes/user/.vep/homo_sapiens/[[SPECIESDEFS::ENSEMBL_VERSION]]_GRCh38
 ## Using API version [[SPECIESDEFS::ENSEMBL_VERSION]], DB version [[SPECIESDEFS::ENSEMBL_VERSION]]
 ## polyphen version 2.2.2
 ## sift version sift5.2.2
-## COSMIC version 78
-## ESP version 20141103
-## gencode version GENCODE 25
+## COSMIC version 92
+## ESP version V2-SSA137
+## gencode version GENCODE 38
 ## genebuild version 2014-07
-## HGMD-PUBLIC version 20162
-## regbuild version 16
-## assembly version GRCh38.p7
-## ClinVar version 201610
-## dbSNP version 147
+## HGMD-PUBLIC version 20204
+## regbuild version 1.0
+## assembly version GRCh38.p13
+## ClinVar version 20210102
+## dbSNP version 154
 ## Column descriptions:
 ## Uploaded_variation : Identifier of uploaded variant
 ## Location : Location of variant in standard coordinate format (chr:start or chr:start-end)
@@ -176,7 +176,6 @@ with --output_file or overwrite existing file with --force_overwrite</pre>
 ## Protein_position : Relative position of amino acid in protein
 ## Amino_acids : Reference and variant amino acids
 ## Codons : Reference and variant codon sequence
-## Existing_variation : Identifier(s) of co-located known variants
 ## Extra column keys:
 ## IMPACT : Subjective impact classification of consequence type
 ## DISTANCE : Shortest distance from variant to transcript
@@ -266,10 +265,10 @@ rs115264708          PHF21B  YES        deleterious(0.03)</pre>
 
     <pre class="code sh_sh">./vep -i examples/homo_sapiens_GRCh38.vcf --cache --force_overwrite --af_1kg -o STDOUT | grep -v "##" | head -n2
 
-#Uploaded_variation  Location     Allele  Gene             Feature          ...  Existing_variation  Extra
-rs7289170            22:17181903  G       ENSG00000093072  ENST00000262607  ...  rs7289170           IMPACT=LOW;STRAND=-1;AFR_AF=0.2390;AMR_AF=0.2003;EAS_AF=0.0456;EUR_AF=0.3211;SAS_AF=0.1401</pre>
+#Uploaded_variation  Location     Allele  Gene             Feature          ...  Extra
+rs7289170            22:17181903  G       ENSG00000093072  ENST00000262607  ...  IMPACT=LOW;STRAND=-1;AFR_AF=0.2390;AMR_AF=0.2003;EAS_AF=0.0456;EUR_AF=0.3211;SAS_AF=0.1401;CLIN_SIG=benign;SOMATIC=0,1;PHENO=1,1;Existing_variation=rs7289170,COSV52831455</pre>
     
-    <p> We can see frequency data for the AFR, AMR, EAS, EUR and SAS continental population groupings; these represent the frequency of the alternate (ALT) allele from our input (G in the case of rs7289170). Note that the Existing_variation column is populated by the identifier of the variant found in the VEP cache (and that it corresponds to the identifier from our input in Uploaded_variation). To retrieve only this information and not the frequency data, we could have used <a href="vep_options.html#opt_check_existing">--check_existing</a> (--af_1kg silently switches on --check_existing). </p>
+    <p> We can see frequency data for the AFR, AMR, EAS, EUR and SAS continental population groupings; these represent the frequency of the alternate (ALT) allele from our input (G in the case of rs7289170). Note that the Existing_variation is populated by the identifier of the variant found in the VEP cache (and that it corresponds to the identifier from our input in Uploaded_variation). To retrieve only this information and not the frequency data, we could have used <a href="vep_options.html#opt_check_existing">--check_existing</a> (--af_1kg silently switches on --check_existing which returns CLIN_SIG, SOMATIC, PHENO and Existing_variation). </p>
    
     <br /> 
     <hr />
