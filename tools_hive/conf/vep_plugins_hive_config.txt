@@ -74,5 +74,11 @@
       "0",
       "1"
     ]
+  },
+
+  UTRannotator => {
+    "params" => [
+      "[[ENSEMBL_VEP_PLUGIN_DATA_DIR]]/uORF_5UTR_GRCh38_PUBLIC.txt"
+    ]
   }
 }
