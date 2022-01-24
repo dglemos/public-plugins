@@ -203,7 +203,12 @@ sub content {
     'PHENOTYPES'          => 'Associated phenotypes',
     'DisGeNET'            => 'DisGeNET',
     'Mastermind_MMID3'    => 'Mastermind URL',
-    'VAR_SYNONYMS'        => 'Variant synonyms'
+    'VAR_SYNONYMS'        => 'Variant synonyms',
+    'existing_InFrame_oORFs'             => 'UTRannotator: existing InFrame oORFs',
+    'five_prime_UTR_variant_annotation'  => 'UTRannotator: five prime UTR variant annotation',
+    'existing_OutOfFrame_oORFs'          => 'UTRannotator: existing OutOfFrame oORFs',
+    'existing_uORFs'                     => 'UTRannotator: existing uORFs',
+    'five_prime_UTR_variant_consequence' => 'UTRannotator: five prime UTR variant consequence'
   );
   for (grep {/\_/} @$headers) {
     $header_titles{$_} ||= $_ =~ s/\_/ /gr;
@@ -244,6 +249,9 @@ sub content {
         }
         elsif ($header eq 'VAR_SYNONYMS'){
           $row->{$header} = $self->get_items_in_list($row_id, 'variant_synonyms', 'Variant synonyms', $row->{$header}, $species);
+        }
+	elsif ($header eq 'five_prime_UTR_variant_annotation'){
+          $row->{$header} = $self->get_items_in_list($row_id, 'utrannotator', 'annotations', $row->{$header}, $species);
         }
         elsif ($header eq 'DOMAINS') {
           $row->{$header} = $self->get_items_in_list($row_id, 'domains', 'Protein domains', $row->{$header}, $species);
@@ -1176,6 +1184,14 @@ sub get_items_in_list {
       my @disgenet_value = split /:/, $entry;
       my $pmid_url = $hub->get_ExtURL_link($disgenet_value[0], 'EPMC_MED', $disgenet_value[0]);
       my $new_entry = $pmid_url . ' <b>Score:</b>&nbsp;' . $disgenet_value[1] . ' <b>Disease:</b>&nbsp;' . $disgenet_value[2];
+      push (@items_with_url, $new_entry);
+    }
+  }
+  elsif ($type eq 'utrannotator') {
+    foreach my $entry (@items_list) {
+      # entry example 'uFrameShift_KozakContext:GCGATGC'
+      my @utrannotator_value = split /:/, $entry;
+      my $new_entry = '<b>' . $utrannotator_value[0] . ':</b>&nbsp;' . $utrannotator_value[1];
       push (@items_with_url, $new_entry);
     }
   }
